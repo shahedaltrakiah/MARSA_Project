@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Scaffold the Laravel 11 REST API backend with PostgreSQL, Redis, authentication, startup profile management, project CRUD, and project collaboration — the complete data foundation for the MARSA platform.
+**Goal:** Scaffold the Laravel 11 REST API backend with MySQL, Redis, authentication, startup profile management, project CRUD, and project collaboration — the complete data foundation for the MARSA platform.
 
-**Architecture:** Laravel 11 pure API (no Blade) with Sanctum token auth. All endpoints return JSON. A stub AIReEvaluationJob is dispatched on profile save but does nothing yet — wired up in Plan 4. File uploads use Laravel's local disk (S3-switchable via config). PostgreSQL is the primary DB; Redis handles queues and cache.
+**Architecture:** Laravel 11 pure API (no Blade) with Sanctum token auth. All endpoints return JSON. A stub AIReEvaluationJob is dispatched on profile save but does nothing yet — wired up in Plan 4. File uploads use Laravel's local disk (S3-switchable via config). MySQL is the primary DB; Redis handles queues and cache.
 
-**Tech Stack:** PHP 8.2+, Laravel 11, PostgreSQL 15+, Redis 7+, Laravel Sanctum, PHPUnit (via `php artisan test`)
+**Tech Stack:** PHP 8.2+, Laravel 11, MySQL 8+, Redis 7+, Laravel Sanctum, PHPUnit (via `php artisan test`)
 
 ---
 
@@ -100,11 +100,11 @@ APP_KEY=  # leave blank — filled by next step
 APP_DEBUG=true
 APP_URL=http://localhost:8000
 
-DB_CONNECTION=pgsql
+DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
-DB_PORT=5432
+DB_PORT=3306
 DB_DATABASE=marsa
-DB_USERNAME=postgres
+DB_USERNAME=root
 DB_PASSWORD=your_password
 
 CACHE_STORE=redis
@@ -126,13 +126,13 @@ php artisan key:generate
 
 Expected: `Application key set successfully.`
 
-- [ ] **Step 5: Create the PostgreSQL database**
+- [ ] **Step 5: Create the MySQL database**
 
 ```bash
-psql -U postgres -c "CREATE DATABASE marsa;"
+mysql -u root -p -e "CREATE DATABASE marsa CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
 
-Expected: `CREATE DATABASE`
+Expected: No output (success). Verify with `mysql -u root -p -e "SHOW DATABASES;"`
 
 - [ ] **Step 6: Configure CORS to allow Next.js (localhost:3000)**
 
@@ -209,6 +209,7 @@ Edit `backend/phpunit.xml` — set the `DB_DATABASE` env for tests:
         <env name="CACHE_STORE" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
+        <env name="DB_CONNECTION" value="mysql"/>
         <env name="DB_DATABASE" value="marsa_test"/>
     </php>
 </phpunit>
@@ -217,10 +218,10 @@ Edit `backend/phpunit.xml` — set the `DB_DATABASE` env for tests:
 - [ ] **Step 9: Create the test database**
 
 ```bash
-psql -U postgres -c "CREATE DATABASE marsa_test;"
+mysql -u root -p -e "CREATE DATABASE marsa_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
 
-Expected: `CREATE DATABASE`
+Expected: No output (success).
 
 - [ ] **Step 10: Verify Laravel boots**
 

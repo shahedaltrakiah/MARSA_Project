@@ -31,7 +31,7 @@ The platform is AI-assisted: a startup profile acts as a live source of truth th
 | Backend API | Laravel 11 (REST API) | Mature auth, queues, file handling, clean API layer |
 | Authentication | Laravel Sanctum | Token-based auth, works cleanly with Next.js |
 | Admin Dashboard | Laravel Filament | Full-featured admin panel at `/admin`, saves significant development time |
-| Primary Database | PostgreSQL | Reliable relational DB for structured business data |
+| Primary Database | MySQL 8+ | Reliable relational DB for structured business data |
 | Cache / Queues | Redis | AI job queuing, session cache, recommendation cache |
 | AI | Anthropic Claude API | AI-assisted recommendations, financial guidance, document analysis |
 | File Storage | Laravel (S3-compatible) | Pitch decks, business plans, images uploaded in profile |
