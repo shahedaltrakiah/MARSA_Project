@@ -27,6 +27,7 @@ The platform is AI-assisted: a startup profile acts as a live source of truth th
 |---|---|---|
 | Frontend | Next.js 14 (App Router) + TypeScript | SSR for marketing/SEO, CSR for the interactive app, one codebase |
 | Styling | Tailwind CSS + shadcn/ui | Consistent, accessible UI components |
+| Theming | CSS variables + next-themes | Two modes: Midnight (deep dark + aurora gradients) and Light (white/gray + violet accents), user-switchable |
 | Backend API | Laravel 11 (REST API) | Mature auth, queues, file handling, clean API layer |
 | Authentication | Laravel Sanctum | Token-based auth, works cleanly with Next.js |
 | Admin Dashboard | Laravel Filament | Full-featured admin panel at `/admin`, saves significant development time |
