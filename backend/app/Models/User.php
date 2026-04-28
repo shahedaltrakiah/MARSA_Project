@@ -21,4 +21,21 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function startupProfile()
+    {
+        return $this->hasOne(StartupProfile::class);
+    }
+
+    public function ownedProjects()
+    {
+        return $this->hasMany(Project::class, 'owner_id');
+    }
+
+    public function collaboratingProjects()
+    {
+        return $this->belongsToMany(Project::class, 'project_collaborators')
+            ->withPivot('role')
+            ->withTimestamps();
+    }
 }
