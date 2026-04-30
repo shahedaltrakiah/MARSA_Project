@@ -32,12 +32,14 @@ class ProjectController extends Controller
 
     public function show(Request $request, Project $project): JsonResponse
     {
+        $project->loadMissing('collaborators');
         $this->authorize('view', $project);
         return response()->json(['data' => new ProjectResource($project->load(['owner', 'lastModifiedBy', 'collaborators']))]);
     }
 
     public function update(UpdateProjectRequest $request, Project $project): JsonResponse
     {
+        $project->loadMissing('collaborators');
         $this->authorize('update', $project);
         $project->update([...$request->validated(), 'last_modified_by' => $request->user()->id]);
         return response()->json(['data' => new ProjectResource($project->load(['owner', 'lastModifiedBy']))]);

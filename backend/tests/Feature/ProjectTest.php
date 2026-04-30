@@ -76,6 +76,11 @@ class ProjectTest extends TestCase
             ->putJson("/api/projects/{$project->id}", ['name' => 'Updated Name'])
             ->assertStatus(200)
             ->assertJsonPath('data.name', 'Updated Name');
+
+        $this->assertDatabaseHas('projects', [
+            'id' => $project->id,
+            'last_modified_by' => $user->id,
+        ]);
     }
 
     public function test_user_can_delete_their_project(): void
@@ -100,6 +105,60 @@ class ProjectTest extends TestCase
             ->assertStatus(201)
             ->assertJsonPath('data.name', 'Original (Copy)');
 
+        $this->assertDatabaseHas('projects', [
+            'name' => 'Original (Copy)',
+            'owner_id' => $user->id,
+        ]);
         $this->assertDatabaseCount('projects', 2);
+    }
+
+    public function test_non_owner_cannot_update_project(): void
+    {
+        [$owner] = $this->userWithToken();
+        [$other, $otherToken] = $this->userWithToken();
+        $project = Project::factory()->create(['owner_id' => $owner->id]);
+
+        $this->withHeader('Authorization', "Bearer {$otherToken}")
+            ->putJson("/api/projects/{$project->id}", ['name' => 'Hacked'])
+            ->assertStatus(403);
+    }
+
+    public function test_viewer_collaborator_cannot_update_project(): void
+    {
+        [$owner] = $this->userWithToken();
+        [$viewer, $viewerToken] = $this->userWithToken();
+        $project = Project::factory()->create(['owner_id' => $owner->id]);
+        $project->collaborators()->attach($viewer->id, ['role' => 'viewer']);
+
+        $this->actingAs($viewer, 'sanctum')
+            ->putJson("/api/projects/{$project->id}", ['name' => 'Hacked'])
+            ->assertStatus(403);
+    }
+
+    public function test_collaborator_cannot_delete_project(): void
+    {
+        [$owner] = $this->userWithToken();
+        [$editor, $editorToken] = $this->userWithToken();
+        $project = Project::factory()->create(['owner_id' => $owner->id]);
+        $project->collaborators()->attach($editor->id, ['role' => 'editor']);
+
+        $this->actingAs($editor, 'sanctum')
+            ->deleteJson("/api/projects/{$project->id}")
+            ->assertStatus(403);
+    }
+
+    public function test_cloned_project_has_no_collaborators(): void
+    {
+        [$user, $token] = $this->userWithToken();
+        [$collaborator] = $this->userWithToken();
+        $project = Project::factory()->create(['owner_id' => $user->id, 'name' => 'Original']);
+        $project->collaborators()->attach($collaborator->id, ['role' => 'editor']);
+
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson("/api/projects/{$project->id}/clone")
+            ->assertStatus(201);
+
+        $cloneId = $response->json('data.id');
+        $this->assertDatabaseMissing('project_collaborators', ['project_id' => $cloneId]);
     }
 }

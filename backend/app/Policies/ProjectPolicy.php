@@ -14,7 +14,7 @@ class ProjectPolicy
     public function update(User $user, Project $project): bool
     {
         if ($project->isOwnedBy($user)) return true;
-        return in_array($project->getCollaboratorRole($user), ['editor']);
+        return $project->getCollaboratorRole($user) === 'editor';
     }
 
     public function delete(User $user, Project $project): bool
