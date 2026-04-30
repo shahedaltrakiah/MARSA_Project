@@ -2,6 +2,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfileFileController;
+use App\Http\Controllers\ProjectCollaboratorController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,4 +24,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/projects/{project}', [ProjectController::class, 'update']);
     Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
     Route::post('/projects/{project}/clone', [ProjectController::class, 'cloneProject']);
+
+    Route::get('/projects/{project}/collaborators', [ProjectCollaboratorController::class, 'index']);
+    Route::post('/projects/{project}/collaborators', [ProjectCollaboratorController::class, 'store']);
+    Route::delete('/projects/{project}/collaborators/{user}', [ProjectCollaboratorController::class, 'destroy']);
 });
