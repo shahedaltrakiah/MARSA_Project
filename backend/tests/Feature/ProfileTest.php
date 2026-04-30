@@ -47,6 +47,16 @@ class ProfileTest extends TestCase
             ->assertStatus(200)
             ->assertJsonPath('data.idea', 'An AI-powered platform for startups')
             ->assertJsonPath('data.stage', 'idea');
+
+        $this->assertDatabaseHas('startup_profiles', [
+            'idea' => 'An AI-powered platform for startups',
+            'stage' => 'idea',
+        ]);
+    }
+
+    public function test_unauthenticated_user_cannot_update_profile(): void
+    {
+        $this->putJson('/api/profile', ['idea' => 'x'])->assertStatus(401);
     }
 
     public function test_stage_must_be_valid_enum(): void

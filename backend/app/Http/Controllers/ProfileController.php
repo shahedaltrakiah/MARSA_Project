@@ -11,14 +11,17 @@ class ProfileController extends Controller
 {
     public function show(Request $request): JsonResponse
     {
-        $profile = $request->user()->startupProfile()->with('files')->firstOrCreate();
+        $profile = $request->user()->startupProfile()->firstOrCreate([]);
+        $profile->load('files');
         return response()->json(['data' => new ProfileResource($profile)]);
     }
 
     public function update(UpdateProfileRequest $request): JsonResponse
     {
-        $profile = $request->user()->startupProfile()->with('files')->firstOrCreate();
+        $profile = $request->user()->startupProfile()->firstOrCreate([]);
         $profile->update($request->validated());
+        $profile->refresh();
+        $profile->load('files');
 
         AIReEvaluationJob::dispatch($profile);
 
