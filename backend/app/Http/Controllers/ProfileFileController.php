@@ -5,6 +5,7 @@ use App\Http\Resources\ProfileFileResource;
 use App\Models\ProfileFile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\File;
 
@@ -21,14 +22,25 @@ class ProfileFileController extends Controller
 
         $profile = $request->user()->startupProfile()->firstOrCreate([]);
         $uploaded = $request->file('file');
-        $path = $uploaded->store("profile-files/{$profile->id}", 'local');
+        $path = null;
+        $file = null;
 
-        $file = $profile->files()->create([
-            'original_name' => $uploaded->getClientOriginalName(),
-            'path' => $path,
-            'mime_type' => $uploaded->getMimeType(),
-            'size' => $uploaded->getSize(),
-        ]);
+        try {
+            DB::transaction(function () use ($profile, $uploaded, &$path, &$file) {
+                $path = $uploaded->store("profile-files/{$profile->id}", 'local');
+                $file = $profile->files()->create([
+                    'original_name' => $uploaded->getClientOriginalName(),
+                    'path'          => $path,
+                    'mime_type'     => $uploaded->getMimeType(),
+                    'size'          => $uploaded->getSize(),
+                ]);
+            });
+        } catch (\Throwable $e) {
+            if ($path) {
+                Storage::disk('local')->delete($path);
+            }
+            throw $e;
+        }
 
         return response()->json(['data' => new ProfileFileResource($file)], 201);
     }
@@ -36,9 +48,12 @@ class ProfileFileController extends Controller
     public function destroy(Request $request, ProfileFile $profileFile): JsonResponse
     {
         $profile = $request->user()->startupProfile;
-        abort_if($profileFile->profile_id !== $profile?->id, 403);
+        abort_if($profile === null || $profileFile->profile_id !== $profile->id, 403);
 
-        Storage::disk('local')->delete($profileFile->path);
+        $deleted = Storage::disk('local')->delete($profileFile->path);
+        if (!$deleted) {
+            \Log::warning('ProfileFile physical delete failed', ['path' => $profileFile->path]);
+        }
         $profileFile->delete();
 
         return response()->json(['message' => 'File deleted']);
