@@ -91,4 +91,62 @@ class ProjectCollaboratorTest extends TestCase
             ])
             ->assertStatus(403);
     }
+
+    public function test_non_owner_cannot_remove_collaborator(): void
+    {
+        $project = Project::factory()->create();
+        $collaborator = User::factory()->create();
+        $project->collaborators()->attach($collaborator->id, ['role' => 'viewer']);
+
+        $other = User::factory()->create();
+        $token = $other->createToken('test')->plainTextToken;
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->deleteJson("/api/projects/{$project->id}/collaborators/{$collaborator->id}")
+            ->assertStatus(403);
+
+        $this->assertDatabaseHas('project_collaborators', [
+            'project_id' => $project->id,
+            'user_id' => $collaborator->id,
+        ]);
+    }
+
+    public function test_re_inviting_existing_collaborator_updates_role(): void
+    {
+        [$owner, $token, $project] = $this->ownerWithProject();
+        $collaborator = User::factory()->create(['email' => 'collab@example.com']);
+        $project->collaborators()->attach($collaborator->id, ['role' => 'viewer']);
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson("/api/projects/{$project->id}/collaborators", [
+                'email' => 'collab@example.com',
+                'role' => 'editor',
+            ])
+            ->assertStatus(201);
+
+        $this->assertDatabaseHas('project_collaborators', [
+            'project_id' => $project->id,
+            'user_id' => $collaborator->id,
+            'role' => 'editor',
+        ]);
+
+        $this->assertDatabaseCount('project_collaborators', 1);
+    }
+
+    public function test_owner_cannot_be_added_as_collaborator(): void
+    {
+        [$owner, $token, $project] = $this->ownerWithProject();
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson("/api/projects/{$project->id}/collaborators", [
+                'email' => $owner->email,
+                'role' => 'editor',
+            ])
+            ->assertStatus(422);
+
+        $this->assertDatabaseMissing('project_collaborators', [
+            'project_id' => $project->id,
+            'user_id' => $owner->id,
+        ]);
+    }
 }

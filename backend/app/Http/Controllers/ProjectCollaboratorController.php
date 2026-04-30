@@ -6,11 +6,10 @@ use App\Http\Resources\ProjectCollaboratorResource;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ProjectCollaboratorController extends Controller
 {
-    public function index(Request $request, Project $project): JsonResponse
+    public function index(Project $project): JsonResponse
     {
         $this->authorize('view', $project);
         return response()->json([
@@ -20,16 +19,20 @@ class ProjectCollaboratorController extends Controller
 
     public function store(StoreCollaboratorRequest $request, Project $project): JsonResponse
     {
-        $invitee = User::where('email', $request->email)->first();
+        $invitee = User::where('email', $request->validated('email'))->firstOrFail();
+
+        if ($project->isOwnedBy($invitee)) {
+            abort(422, 'The project owner cannot be added as a collaborator.');
+        }
 
         $project->collaborators()->syncWithoutDetaching([
-            $invitee->id => ['role' => $request->role],
+            $invitee->id => ['role' => $request->validated('role')],
         ]);
 
         return response()->json(['message' => 'Collaborator added'], 201);
     }
 
-    public function destroy(Request $request, Project $project, User $user): JsonResponse
+    public function destroy(Project $project, User $user): JsonResponse
     {
         $this->authorize('delete', $project);
         $project->collaborators()->detach($user->id);
