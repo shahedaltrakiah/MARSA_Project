@@ -9,7 +9,10 @@ import {
 
 jest.mock('js-cookie')
 
-const mockCookies = Cookies as jest.Mocked<typeof Cookies>
+// Cookies.get has overloaded signatures; cast to jest.Mock to avoid TS overload conflicts.
+const mockGet = Cookies.get as jest.Mock
+const mockSet = Cookies.set as jest.Mock
+const mockRemove = Cookies.remove as jest.Mock
 
 beforeEach(() => {
   jest.clearAllMocks()
@@ -17,12 +20,12 @@ beforeEach(() => {
 
 describe('getToken', () => {
   it('returns null when cookie is absent', () => {
-    mockCookies.get.mockReturnValue(undefined)
+    mockGet.mockImplementation(() => undefined)
     expect(getToken()).toBeNull()
   })
 
   it('returns token string when cookie exists', () => {
-    mockCookies.get.mockReturnValue('my-token')
+    mockGet.mockImplementation(() => 'my-token')
     expect(getToken()).toBe('my-token')
   })
 })
@@ -30,7 +33,7 @@ describe('getToken', () => {
 describe('setToken', () => {
   it('calls Cookies.set with the correct key and value', () => {
     setToken('abc123')
-    expect(mockCookies.set).toHaveBeenCalledWith(
+    expect(mockSet).toHaveBeenCalledWith(
       'marsa_token',
       'abc123',
       expect.objectContaining({ expires: 30, sameSite: 'lax' })
@@ -41,25 +44,25 @@ describe('setToken', () => {
 describe('clearToken', () => {
   it('removes both token and user cookies', () => {
     clearToken()
-    expect(mockCookies.remove).toHaveBeenCalledWith('marsa_token')
-    expect(mockCookies.remove).toHaveBeenCalledWith('marsa_user')
+    expect(mockRemove).toHaveBeenCalledWith('marsa_token')
+    expect(mockRemove).toHaveBeenCalledWith('marsa_user')
   })
 })
 
 describe('getStoredUser', () => {
   it('returns null when user cookie is absent', () => {
-    mockCookies.get.mockReturnValue(undefined)
+    mockGet.mockImplementation(() => undefined)
     expect(getStoredUser()).toBeNull()
   })
 
   it('parses and returns the stored user object', () => {
     const user = { id: 1, name: 'Alice', email: 'alice@example.com', created_at: '2024-01-01' }
-    mockCookies.get.mockReturnValue(JSON.stringify(user))
+    mockGet.mockImplementation(() => JSON.stringify(user))
     expect(getStoredUser()).toEqual(user)
   })
 
   it('returns null when cookie value is not valid JSON', () => {
-    mockCookies.get.mockReturnValue('not-json{')
+    mockGet.mockImplementation(() => 'not-json{')
     expect(getStoredUser()).toBeNull()
   })
 })
@@ -68,7 +71,7 @@ describe('storeUser', () => {
   it('serialises user to JSON and calls Cookies.set', () => {
     const user = { id: 2, name: 'Bob', email: 'bob@example.com' }
     storeUser(user)
-    expect(mockCookies.set).toHaveBeenCalledWith(
+    expect(mockSet).toHaveBeenCalledWith(
       'marsa_user',
       JSON.stringify(user),
       expect.objectContaining({ expires: 30, sameSite: 'lax' })

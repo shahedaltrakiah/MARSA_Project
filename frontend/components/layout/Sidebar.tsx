@@ -34,8 +34,8 @@ const frameworkItems: NavItem[] = [
 ]
 
 const accountItems: NavItem[] = [
-  { label: "Profile", href: "#", icon: <CircleUserRound className="size-4" /> },
-  { label: "Account", href: "#", icon: <CreditCard className="size-4" /> },
+  { label: "Startup Profile", href: "/app/onboarding", icon: <CircleUserRound className="size-4" /> },
+  { label: "Account", href: "/app/profile", icon: <CreditCard className="size-4" /> },
 ]
 
 export type SidebarProps = {
