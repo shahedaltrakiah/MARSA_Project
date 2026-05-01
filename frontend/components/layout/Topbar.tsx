@@ -49,19 +49,19 @@ export default function Topbar({ projectName = "Workspace" }: TopbarProps) {
           className="inline-flex items-center rounded-md px-2 py-1 hover:bg-muted"
           aria-label="MARSA home"
         >
-          <span className="relative size-8 overflow-hidden">
+          <span className="relative h-8 w-28 overflow-hidden sm:w-32">
             <Image
               src="/brand/marsa-logo-blue.png"
               alt="MARSA logo"
               fill
-              className="object-contain p-1 dark:hidden"
+              className="object-contain dark:hidden"
               priority
             />
             <Image
               src="/brand/marsa-logo-blue-white.png"
               alt="MARSA logo"
               fill
-              className="hidden object-contain p-1 dark:block"
+              className="hidden object-contain dark:block"
               priority
             />
           </span>

@@ -11,6 +11,8 @@ import {
   LayoutGrid,
   Target,
 } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -19,39 +21,33 @@ import { Separator } from "@/components/ui/separator"
 
 type NavItem = {
   label: string
+  slug: string
   href: string
   icon: React.ReactNode
   badge?: string
 }
 
-const frameworkItems: NavItem[] = [
-  { label: "Offering", href: "#", icon: <BriefcaseBusiness className="size-4" /> },
-  { label: "Business Model", href: "#", icon: <LayoutGrid className="size-4" /> },
-  { label: "Customer", href: "#", icon: <Target className="size-4" /> },
-  { label: "Money", href: "#", icon: <Banknote className="size-4" /> },
-  { label: "Assets", href: "#", icon: <Boxes className="size-4" /> },
-  { label: "Action", href: "#", icon: <Activity className="size-4" />, badge: "New" },
-]
-
-const accountItems: NavItem[] = [
-  { label: "Startup Profile", href: "/app/onboarding", icon: <CircleUserRound className="size-4" /> },
-  { label: "Account", href: "/app/profile", icon: <CreditCard className="size-4" /> },
+const frameworkBase: Omit<NavItem, "href">[] = [
+  { label: "Offering", slug: "offering", icon: <BriefcaseBusiness className="size-4" /> },
+  { label: "Business Model", slug: "business-model", icon: <LayoutGrid className="size-4" /> },
+  { label: "Customer", slug: "customer", icon: <Target className="size-4" /> },
+  { label: "Money", slug: "money", icon: <Banknote className="size-4" /> },
+  { label: "Assets", slug: "assets", icon: <Boxes className="size-4" /> },
+  { label: "Action", slug: "action", icon: <Activity className="size-4" />, badge: "New" },
 ]
 
 export type SidebarProps = {
-  activeLabel?: string
+  projectId?: string
 }
 
 function NavLink({ item, active }: { item: NavItem; active: boolean }) {
-  return (
-    <a
-      href={item.href}
-      className={[
-        "group flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
-        active ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground",
-      ].join(" ")}
-      aria-current={active ? "page" : undefined}
-    >
+  const className = [
+    "group flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
+    active ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+  ].join(" ")
+
+  const content = (
+    <>
       <span className="text-muted-foreground group-hover:text-foreground">{item.icon}</span>
       <span className="min-w-0 flex-1 truncate">{item.label}</span>
       {item.badge ? (
@@ -59,16 +55,47 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
           {item.badge}
         </Badge>
       ) : null}
-    </a>
+    </>
+  )
+
+  if (item.href === "#") {
+    return (
+      <span className={className} aria-current={active ? "page" : undefined}>
+        {content}
+      </span>
+    )
+  }
+
+  return (
+    <Link href={item.href} className={className} aria-current={active ? "page" : undefined}>
+      {content}
+    </Link>
   )
 }
 
-export default function Sidebar({ activeLabel = "Offering" }: SidebarProps) {
+export default function Sidebar({ projectId }: SidebarProps) {
+  const pathname = usePathname()
+
+  const frameworkItems: NavItem[] = frameworkBase.map((item) => ({
+    ...item,
+    href: projectId ? `/app/projects/${projectId}/${item.slug}` : "#",
+  }))
+
+  const accountItems: NavItem[] = [
+    {
+      label: "Startup Profile",
+      slug: "onboarding",
+      href: "/app/onboarding",
+      icon: <CircleUserRound className="size-4" />,
+    },
+    { label: "Account", slug: "profile", href: "/app/profile", icon: <CreditCard className="size-4" /> },
+  ]
+
   return (
     <aside className="flex h-[calc(100vh-3.5rem)] w-[240px] flex-col border-r bg-card">
       <div className="flex items-center gap-3 p-4">
         <Avatar className="size-9">
-          <AvatarFallback className="bg-[linear-gradient(135deg,var(--marsa-accent-violet),var(--marsa-accent-teal))] text-primary-foreground">
+          <AvatarFallback className="bg-[linear-gradient(135deg,var(--secondary),var(--primary))] text-primary-foreground">
             U
           </AvatarFallback>
         </Avatar>
@@ -88,7 +115,11 @@ export default function Sidebar({ activeLabel = "Offering" }: SidebarProps) {
           Framework
         </div>
         {frameworkItems.map((item) => (
-          <NavLink key={item.label} item={item} active={item.label === activeLabel} />
+          <NavLink
+            key={item.label}
+            item={item}
+            active={Boolean(pathname && pathname.includes(`/${item.slug}`))}
+          />
         ))}
 
         <Separator className="my-3" />
@@ -97,18 +128,18 @@ export default function Sidebar({ activeLabel = "Offering" }: SidebarProps) {
           Account
         </div>
         {accountItems.map((item) => (
-          <NavLink key={item.label} item={item} active={item.label === activeLabel} />
+          <NavLink key={item.label} item={item} active={Boolean(pathname && pathname.includes(item.href))} />
         ))}
       </nav>
 
       <div className="border-t p-3">
-        <a
+        <Link
           href="/app/projects"
           className="block rounded-lg border bg-background px-3 py-2 text-sm hover:bg-muted"
         >
           <div className="font-medium">Projects</div>
           <div className="text-xs text-muted-foreground">View all workspaces</div>
-        </a>
+        </Link>
       </div>
     </aside>
   )

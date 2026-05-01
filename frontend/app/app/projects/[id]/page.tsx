@@ -95,6 +95,18 @@ export default function ProjectPage() {
         </Link>
       </div>
 
+      <div className="flex flex-wrap gap-2">
+        {["Offering", "Business Model", "Customer", "Money", "Assets", "Action"].map((s) => (
+          <Link
+            key={s}
+            href={`/app/projects/${id}/${s.toLowerCase().replace(" ", "-")}`}
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+          >
+            {s}
+          </Link>
+        ))}
+      </div>
+
       {/* Project details */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-3">
