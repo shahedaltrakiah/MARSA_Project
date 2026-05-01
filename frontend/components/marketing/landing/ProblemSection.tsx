@@ -4,96 +4,104 @@ import { AlertTriangle, LayoutGrid, Wallet } from "lucide-react"
 
 import SectionWrapper from "@/components/marketing/ux/SectionWrapper"
 
-export default function ProblemSection() {
-  const cards = [
-    {
-      icon: <AlertTriangle className="size-4" />,
-      title: "Confusion",
-      description: "Ideas live in too many places, and decisions get delayed.",
-    },
-    {
-      icon: <LayoutGrid className="size-4" />,
-      title: "Lack of structure",
-      description: "You can’t tell what’s next, so execution becomes reactive.",
-    },
-    {
-      icon: <Wallet className="size-4" />,
-      title: "Financial uncertainty",
-      description: "Runway and assumptions drift without a shared model.",
-    },
-  ] as const
+const CARDS = [
+  {
+    icon: <AlertTriangle className="size-6" />,
+    title: "Confusion",
+    description: "Ideas live in too many places, and decisions get delayed.",
+    bracketColor: "#6C5CE7",
+    dotColor: "#6C5CE780",
+  },
+  {
+    icon: <LayoutGrid className="size-6" />,
+    title: "Lack of structure",
+    description: "You can't tell what's next, so execution becomes reactive.",
+    bracketColor: "#1A9FE0",
+    dotColor: "#1A9FE080",
+  },
+  {
+    icon: <Wallet className="size-6" />,
+    title: "Financial uncertainty",
+    description: "Runway and assumptions drift without a shared model.",
+    bracketColor: "#00BAC5",
+    dotColor: "#00BAC580",
+  },
+] as const
 
+export default function ProblemSection() {
   return (
     <SectionWrapper
       eyebrow="Why founders get stuck"
       title="The early stage is messy — MARSA makes it structured."
-      description="Most teams don’t lack effort. They lack a clear system that connects strategy, numbers, and execution."
+      description="Most teams don't lack effort. They lack a clear system that connects strategy, numbers, and execution."
     >
-      {/* Inspired by image 3: metrics cards with corner + dotted accents */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map((c, idx) => (
-          <div
-            key={c.title}
-            className={[
-              "group relative isolate overflow-hidden rounded-3xl border bg-card/60 p-6 shadow-sm backdrop-blur",
-              "transition will-change-transform hover:-translate-y-0.5 hover:shadow-md",
-            ].join(" ")}
-          >
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {CARDS.map((c) => (
+          <div key={c.title} className="group relative">
+            {/* Floating dotted rectangle offset behind card (bottom-right) */}
             <div
               aria-hidden
-              className={[
-                "pointer-events-none absolute inset-0 opacity-0 transition group-hover:opacity-100",
-                "[background:radial-gradient(80%_70%_at_50%_0%,color-mix(in_oklab,var(--primary)_10%,transparent),transparent)]",
-              ].join(" ")}
+              style={{
+                position: "absolute",
+                inset: 0,
+                top: 10,
+                left: 10,
+                borderRadius: 20,
+                border: `2px dashed ${c.dotColor}`,
+                pointerEvents: "none",
+                zIndex: 0,
+              }}
             />
 
-            {/* top-left bracket */}
+            {/* Card */}
             <div
-              aria-hidden
-              className={[
-                "pointer-events-none absolute left-4 top-4 h-7 w-7 rounded-[10px]",
-                "border-l-4 border-t-4",
-                idx % 3 === 0
-                  ? "border-[color-mix(in_oklab,var(--primary)_55%,transparent)]"
-                  : idx % 3 === 1
-                    ? "border-[color-mix(in_oklab,var(--secondary)_60%,transparent)]"
-                    : "border-[color-mix(in_oklab,var(--muted-foreground)_25%,transparent)]",
-              ].join(" ")}
-            />
-
-            {/* dotted right bracket */}
-            <div
-              aria-hidden
-              className={[
-                // behind the card content (as a background accent)
-                "pointer-events-none absolute -z-10 right-3 top-9 h-16 w-10 rounded-2xl",
-                "border-2 border-dashed",
-                "opacity-70 blur-[0.2px]",
-                idx % 3 === 0
-                  ? "border-[color-mix(in_oklab,var(--primary)_45%,transparent)]"
-                  : idx % 3 === 1
-                    ? "border-[color-mix(in_oklab,var(--secondary)_50%,transparent)]"
-                    : "border-[color-mix(in_oklab,var(--muted-foreground)_22%,transparent)]",
-              ].join(" ")}
-            />
-
-            <div className="relative flex items-start gap-3">
+              className="relative z-10 flex flex-col items-center rounded-[20px] bg-card px-6 pb-7 pt-8 text-center transition hover:-translate-y-0.5 hover:shadow-md"
+              style={{ border: `2px dashed ${c.bracketColor}50` }}
+            >
+              {/* Top-left solid L-bracket */}
               <div
-                className={[
-                  "inline-flex size-10 shrink-0 items-center justify-center rounded-2xl border bg-background/60 shadow-sm",
-                  idx % 3 === 0
-                    ? "border-[color-mix(in_oklab,var(--primary)_26%,transparent)]"
-                    : idx % 3 === 1
-                      ? "border-[color-mix(in_oklab,var(--secondary)_30%,transparent)]"
-                      : "border-[color-mix(in_oklab,var(--muted-foreground)_14%,transparent)]",
-                ].join(" ")}
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  top: 14,
+                  left: 14,
+                  width: 22,
+                  height: 22,
+                  borderTop: `3px solid ${c.bracketColor}`,
+                  borderLeft: `3px solid ${c.bracketColor}`,
+                  borderRadius: "4px 0 0 0",
+                }}
+              />
+
+              {/* Top-right solid L-bracket */}
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  top: 14,
+                  right: 14,
+                  width: 22,
+                  height: 22,
+                  borderTop: `3px solid ${c.bracketColor}`,
+                  borderRight: `3px solid ${c.bracketColor}`,
+                  borderRadius: "0 4px 0 0",
+                }}
+              />
+
+              {/* Icon */}
+              <div
+                className="mb-4 flex size-14 items-center justify-center rounded-2xl"
+                style={{
+                  background: `${c.bracketColor}12`,
+                  color: c.bracketColor,
+                  border: `1.5px solid ${c.bracketColor}30`,
+                }}
               >
                 {c.icon}
               </div>
-              <div>
-                <div className="font-medium">{c.title}</div>
-                <div className="mt-1 text-sm text-muted-foreground">{c.description}</div>
-              </div>
+
+              <p className="font-semibold text-foreground">{c.title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.description}</p>
             </div>
           </div>
         ))}
@@ -101,4 +109,3 @@ export default function ProblemSection() {
     </SectionWrapper>
   )
 }
-
