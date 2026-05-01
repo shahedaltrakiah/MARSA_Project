@@ -40,6 +40,16 @@ export interface StartupProfile {
   updated_at: string
 }
 
+export type ProjectSectionName =
+  | 'offering'
+  | 'business-model'
+  | 'customer'
+  | 'money'
+  | 'assets'
+  | 'action'
+
+export type ProjectSectionContent = Record<string, string>
+
 export type CollaboratorRole = 'editor' | 'viewer'
 
 export interface ProjectCollaborator {
