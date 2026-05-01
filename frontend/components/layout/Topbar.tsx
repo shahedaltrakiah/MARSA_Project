@@ -2,11 +2,13 @@
 
 import * as React from "react"
 import { useTheme } from "next-themes"
+import Image from "next/image"
 import Link from "next/link"
 import { LaptopMinimal, Moon, Sun } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import UserMenu from "@/components/layout/UserMenu"
 
 export type TopbarProps = {
   projectName?: string
@@ -47,11 +49,21 @@ export default function Topbar({ projectName = "Workspace" }: TopbarProps) {
           className="inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm font-semibold tracking-wide hover:bg-muted"
           aria-label="MARSA home"
         >
-          <span
-            className="inline-flex size-8 items-center justify-center rounded-lg bg-[linear-gradient(135deg,var(--marsa-accent-violet),var(--marsa-accent-teal))] text-primary-foreground"
-            aria-hidden
-          >
-            M
+          <span className="relative size-8 overflow-hidden rounded-lg border bg-card">
+            <Image
+              src="/brand/marsa-logo-blue.png"
+              alt="MARSA logo"
+              fill
+              className="object-contain p-1 dark:hidden"
+              priority
+            />
+            <Image
+              src="/brand/marsa-logo-blue-white.png"
+              alt="MARSA logo"
+              fill
+              className="hidden object-contain p-1 dark:block"
+              priority
+            />
           </span>
           <span>MARSA</span>
         </Link>
@@ -66,6 +78,7 @@ export default function Topbar({ projectName = "Workspace" }: TopbarProps) {
         </div>
 
         <ThemeToggle />
+        <UserMenu />
       </div>
     </header>
   )
