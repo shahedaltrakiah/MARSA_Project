@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import Image from "next/image"
 import Link from "next/link"
 
 import { buttonVariants } from "@/components/ui/button"
@@ -9,14 +10,23 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen flex-col">
       <header className="border-b bg-background/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <Link href="/" className="inline-flex items-center gap-2 font-semibold tracking-wide">
-            <span
-              className="inline-flex size-9 items-center justify-center rounded-xl bg-[linear-gradient(135deg,var(--marsa-accent-violet),var(--marsa-accent-teal))] text-primary-foreground"
-              aria-hidden
-            >
-              M
+          <Link href="/" className="inline-flex items-center">
+            <span className="relative size-9 overflow-hidden">
+              <Image
+                src="/brand/marsa-logo-blue.png"
+                alt="MARSA logo"
+                fill
+                className="object-contain p-1 dark:hidden"
+                priority
+              />
+              <Image
+                src="/brand/marsa-logo-blue-white.png"
+                alt="MARSA logo"
+                fill
+                className="hidden object-contain p-1 dark:block"
+                priority
+              />
             </span>
-            <span>MARSA</span>
           </Link>
 
           <nav className="hidden items-center gap-2 sm:flex">

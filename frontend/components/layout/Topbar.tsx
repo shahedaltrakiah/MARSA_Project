@@ -46,10 +46,10 @@ export default function Topbar({ projectName = "Workspace" }: TopbarProps) {
       <div className="mx-auto flex h-14 max-w-[1600px] items-center gap-3 px-4">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm font-semibold tracking-wide hover:bg-muted"
+          className="inline-flex items-center rounded-md px-2 py-1 hover:bg-muted"
           aria-label="MARSA home"
         >
-          <span className="relative size-8 overflow-hidden rounded-lg border bg-card">
+          <span className="relative size-8 overflow-hidden">
             <Image
               src="/brand/marsa-logo-blue.png"
               alt="MARSA logo"
@@ -65,7 +65,6 @@ export default function Topbar({ projectName = "Workspace" }: TopbarProps) {
               priority
             />
           </span>
-          <span>MARSA</span>
         </Link>
 
         <Separator orientation="vertical" className="h-6" />

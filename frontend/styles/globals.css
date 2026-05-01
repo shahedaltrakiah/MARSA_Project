@@ -38,11 +38,12 @@
 :root {
   /* MARSA Light */
   --marsa-bg: #ffffff;
-  --marsa-surface: #f8fafc;
+  --marsa-surface: #f5f7fa;
   --marsa-border: #e2e8f0;
   --marsa-text: #0f172a;
-  --marsa-accent-violet: #7c3aed;
-  --marsa-accent-teal: #0d9488;
+  /* Brand */
+  --marsa-anchor-blue: #002d62;
+  --marsa-action-teal: #00c4cc;
 
   /* shadcn tokens (Light) */
   --background: var(--marsa-bg);
@@ -51,24 +52,26 @@
   --card-foreground: var(--marsa-text);
   --popover: var(--marsa-surface);
   --popover-foreground: var(--marsa-text);
-  --primary: var(--marsa-accent-violet);
+  /* Anchor Blue: primary branding */
+  --primary: var(--marsa-anchor-blue);
   --primary-foreground: #ffffff;
-  --secondary: var(--marsa-accent-teal);
+  /* Action Teal: CTAs & interactive */
+  --secondary: var(--marsa-action-teal);
   --secondary-foreground: #ffffff;
   --muted: var(--marsa-surface);
   --muted-foreground: color-mix(in oklab, var(--marsa-text) 60%, transparent);
-  --accent: color-mix(in oklab, var(--marsa-accent-violet) 12%, var(--marsa-surface));
+  --accent: color-mix(in oklab, var(--marsa-action-teal) 14%, var(--marsa-surface));
   --accent-foreground: var(--marsa-text);
   --destructive: #ef4444;
   --border: var(--marsa-border);
   --input: var(--marsa-border);
-  --ring: color-mix(in oklab, var(--marsa-accent-violet) 55%, transparent);
+  --ring: color-mix(in oklab, var(--marsa-action-teal) 55%, transparent);
   --radius: 0.875rem;
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial,
-    "Noto Sans", "Liberation Sans", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
+  /* Font variables are provided by next/font in app/layout.tsx */
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-inter);
+  --font-heading: var(--font-sora);
 }
 
 .dark {
@@ -77,8 +80,9 @@
   --marsa-surface: #12121a;
   --marsa-border: #1e1e2e;
   --marsa-text: #e2e8f0;
-  --marsa-accent-violet: #7c3aed;
-  --marsa-accent-teal: #0d9488;
+  /* Brand */
+  --marsa-anchor-blue: #002d62;
+  --marsa-action-teal: #00c4cc;
 
   /* shadcn tokens (Midnight) */
   --background: var(--marsa-bg);
@@ -87,18 +91,25 @@
   --card-foreground: var(--marsa-text);
   --popover: var(--marsa-surface);
   --popover-foreground: var(--marsa-text);
-  --primary: var(--marsa-accent-violet);
+  /* Anchor Blue: primary branding */
+  --primary: var(--marsa-anchor-blue);
   --primary-foreground: #ffffff;
-  --secondary: var(--marsa-accent-teal);
-  --secondary-foreground: #041312;
+  /* Action Teal: CTAs & interactive */
+  --secondary: var(--marsa-action-teal);
+  --secondary-foreground: #001a1c;
   --muted: color-mix(in oklab, var(--marsa-surface) 80%, var(--marsa-bg));
   --muted-foreground: color-mix(in oklab, var(--marsa-text) 65%, transparent);
-  --accent: color-mix(in oklab, var(--marsa-accent-violet) 18%, var(--marsa-surface));
+  --accent: color-mix(in oklab, var(--marsa-action-teal) 16%, var(--marsa-surface));
   --accent-foreground: var(--marsa-text);
   --destructive: #ef4444;
   --border: var(--marsa-border);
   --input: color-mix(in oklab, var(--marsa-border) 75%, transparent);
-  --ring: color-mix(in oklab, var(--marsa-accent-violet) 55%, transparent);
+  --ring: color-mix(in oklab, var(--marsa-action-teal) 55%, transparent);
+}
+
+html[lang="ar"] {
+  --font-sans: var(--font-ibm-plex-arabic);
+  --font-heading: var(--font-ibm-plex-arabic);
 }
 
 @layer base {

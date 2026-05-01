@@ -1,24 +1,36 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { IBM_Plex_Sans_Arabic, Inter, Sora } from "next/font/google"
 
 import ThemeProvider from "@/components/providers/ThemeProvider"
 import { AuthProvider } from "@/contexts/AuthContext"
 
 import "@/styles/globals.css"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 })
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const sora = Sora({
+  variable: "--font-sora",
   subsets: ["latin"],
+  weight: ["500", "600", "700"],
+})
+
+const ibmPlexArabic = IBM_Plex_Sans_Arabic({
+  variable: "--font-ibm-plex-arabic",
+  subsets: ["arabic"],
+  weight: ["400", "500", "700"],
 })
 
 export const metadata: Metadata = {
   title: "MARSA",
   description: "A structured workspace for entrepreneurs — from idea to execution",
+  icons: {
+    icon: [{ url: "/icon.png" }],
+    apple: [{ url: "/icon.png" }],
+  },
 }
 
 export default function RootLayout({
@@ -29,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${sora.variable} ${ibmPlexArabic.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
