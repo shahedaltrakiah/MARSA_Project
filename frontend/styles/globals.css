@@ -1,0 +1,118 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-heading: var(--font-sans);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  /* MARSA Light */
+  --marsa-bg: #ffffff;
+  --marsa-surface: #f8fafc;
+  --marsa-border: #e2e8f0;
+  --marsa-text: #0f172a;
+  --marsa-accent-violet: #7c3aed;
+  --marsa-accent-teal: #0d9488;
+
+  /* shadcn tokens (Light) */
+  --background: var(--marsa-bg);
+  --foreground: var(--marsa-text);
+  --card: var(--marsa-surface);
+  --card-foreground: var(--marsa-text);
+  --popover: var(--marsa-surface);
+  --popover-foreground: var(--marsa-text);
+  --primary: var(--marsa-accent-violet);
+  --primary-foreground: #ffffff;
+  --secondary: var(--marsa-accent-teal);
+  --secondary-foreground: #ffffff;
+  --muted: var(--marsa-surface);
+  --muted-foreground: color-mix(in oklab, var(--marsa-text) 60%, transparent);
+  --accent: color-mix(in oklab, var(--marsa-accent-violet) 12%, var(--marsa-surface));
+  --accent-foreground: var(--marsa-text);
+  --destructive: #ef4444;
+  --border: var(--marsa-border);
+  --input: var(--marsa-border);
+  --ring: color-mix(in oklab, var(--marsa-accent-violet) 55%, transparent);
+  --radius: 0.875rem;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial,
+    "Noto Sans", "Liberation Sans", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+.dark {
+  /* MARSA Midnight */
+  --marsa-bg: #0a0a0f;
+  --marsa-surface: #12121a;
+  --marsa-border: #1e1e2e;
+  --marsa-text: #e2e8f0;
+  --marsa-accent-violet: #7c3aed;
+  --marsa-accent-teal: #0d9488;
+
+  /* shadcn tokens (Midnight) */
+  --background: var(--marsa-bg);
+  --foreground: var(--marsa-text);
+  --card: var(--marsa-surface);
+  --card-foreground: var(--marsa-text);
+  --popover: var(--marsa-surface);
+  --popover-foreground: var(--marsa-text);
+  --primary: var(--marsa-accent-violet);
+  --primary-foreground: #ffffff;
+  --secondary: var(--marsa-accent-teal);
+  --secondary-foreground: #041312;
+  --muted: color-mix(in oklab, var(--marsa-surface) 80%, var(--marsa-bg));
+  --muted-foreground: color-mix(in oklab, var(--marsa-text) 65%, transparent);
+  --accent: color-mix(in oklab, var(--marsa-accent-violet) 18%, var(--marsa-surface));
+  --accent-foreground: var(--marsa-text);
+  --destructive: #ef4444;
+  --border: var(--marsa-border);
+  --input: color-mix(in oklab, var(--marsa-border) 75%, transparent);
+  --ring: color-mix(in oklab, var(--marsa-accent-violet) 55%, transparent);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
