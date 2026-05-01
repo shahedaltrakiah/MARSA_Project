@@ -7,18 +7,35 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-
-type LoginFormState = {
-  email: string
-  password: string
-}
+import { useAuth } from "@/hooks/useAuth"
+import { getFirstError, isValidationError } from "@/lib/api"
 
 export default function LoginPage() {
-  const [form, setForm] = React.useState<LoginFormState>({ email: "", password: "" })
+  const { login } = useAuth()
+  const [email, setEmail] = React.useState("")
+  const [password, setPassword] = React.useState("")
+  const [error, setError] = React.useState<string | null>(null)
+  const [isLoading, setIsLoading] = React.useState(false)
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    console.log(form)
+    setError(null)
+    setIsLoading(true)
+    try {
+      await login(email, password)
+    } catch (err) {
+      if (isValidationError(err)) {
+        setError(
+          getFirstError(err, "email") ??
+          getFirstError(err, "password") ??
+          "Invalid credentials."
+        )
+      } else {
+        setError("Something went wrong. Please try again.")
+      }
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -36,9 +53,10 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 placeholder="you@company.com"
-                value={form.email}
-                onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -48,14 +66,17 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 placeholder="••••••••"
-                value={form.password}
-                onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
-            <Button type="submit" className="w-full">
-              Login
+            {error && <p className="text-sm text-destructive">{error}</p>}
+
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Signing in…" : "Login"}
             </Button>
 
             <div className="text-center text-sm text-muted-foreground">

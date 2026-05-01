@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 
 import ThemeProvider from "@/components/providers/ThemeProvider"
+import { AuthProvider } from "@/contexts/AuthContext"
 
 import "@/styles/globals.css"
 
@@ -39,7 +40,7 @@ export default function RootLayout({
           value={{ light: "light", midnight: "dark" }}
           disableTransitionOnChange
         >
-          {children}
+          <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>
       </body>
     </html>
