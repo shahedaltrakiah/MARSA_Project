@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfileFileController;
 use App\Http\Controllers\ProjectCollaboratorController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectSectionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -29,4 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/projects/{project}/collaborators', [ProjectCollaboratorController::class, 'index']);
     Route::post('/projects/{project}/collaborators', [ProjectCollaboratorController::class, 'store']);
     Route::delete('/projects/{project}/collaborators/{user}', [ProjectCollaboratorController::class, 'destroy']);
+
+    Route::get('/projects/{project}/sections/{section}', [ProjectSectionController::class, 'show']);
+    Route::put('/projects/{project}/sections/{section}', [ProjectSectionController::class, 'update']);
 });

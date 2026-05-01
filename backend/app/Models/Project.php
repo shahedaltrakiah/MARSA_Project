@@ -42,4 +42,9 @@ class Project extends Model
         $collaborator = $this->collaborators()->where('user_id', $user->id)->first();
         return $collaborator?->pivot->role;
     }
+
+    public function sections()
+    {
+        return $this->hasMany(ProjectSection::class);
+    }
 }
