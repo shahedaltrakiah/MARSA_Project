@@ -28,8 +28,8 @@ export const metadata: Metadata = {
   title: "MARSA",
   description: "A structured workspace for entrepreneurs — from idea to execution",
   icons: {
-    icon: [{ url: "/icon.png" }],
-    apple: [{ url: "/icon.png" }],
+    icon: [{ url: "/icon.png", type: "image/png" }],
+    apple: [{ url: "/icon.png", type: "image/png" }],
   },
 }
 

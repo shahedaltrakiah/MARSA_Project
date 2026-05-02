@@ -10,7 +10,10 @@ import WhatYouCanDoSection from "@/components/marketing/landing/WhatYouCanDoSect
 export default function LandingPage() {
   return (
     <div className="relative">
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 min-h-[calc(100dvh-3.5rem)] sm:min-h-[calc(100dvh-4rem)]"
+      >
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,color-mix(in_oklab,var(--secondary)_12%,transparent),transparent)]" />
       </div>
 

@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import Image from "next/image"
-import Link from "next/link"
 
 import { cn } from "@/components/utils"
+import { Link } from "@/i18n/navigation"
 
 export default function AuthSplitLayout({
   title,
@@ -31,22 +31,22 @@ export default function AuthSplitLayout({
 
           <div className="relative flex w-full flex-col justify-between p-10">
             <Link href="/" className="inline-flex items-center gap-3" aria-label="MARSA home">
-              <span className="relative h-10 w-40">
-                <Image
-                  src="/brand/marsa-logo-blue.png"
-                  alt="MARSA logo"
-                  fill
-                  className="object-contain dark:hidden"
-                  priority
-                />
-                <Image
-                  src="/brand/marsa-logo-blue-white.png"
-                  alt="MARSA logo"
-                  fill
-                  className="hidden object-contain dark:block"
-                  priority
-                />
-              </span>
+              <Image
+                src="/brand/marsa-logo-blue.png"
+                alt="MARSA logo"
+                width={420}
+                height={120}
+                className="h-16 w-auto scale-[1.2] origin-left dark:hidden"
+                priority
+              />
+              <Image
+                src="/brand/marsa-logo-blue-white.png"
+                alt="MARSA logo"
+                width={420}
+                height={120}
+                className="hidden h-16 w-auto scale-[1.2] origin-left dark:block"
+                priority
+              />
             </Link>
 
             <div className="max-w-md">
@@ -79,22 +79,22 @@ export default function AuthSplitLayout({
           <div className={cn("w-full max-w-md")}>
             <div className="mb-8 lg:hidden">
               <Link href="/" className="inline-flex items-center" aria-label="MARSA home">
-                <span className="relative h-9 w-36">
-                  <Image
-                    src="/brand/marsa-logo-blue.png"
-                    alt="MARSA logo"
-                    fill
-                    className="object-contain dark:hidden"
-                    priority
-                  />
-                  <Image
-                    src="/brand/marsa-logo-blue-white.png"
-                    alt="MARSA logo"
-                    fill
-                    className="hidden object-contain dark:block"
-                    priority
-                  />
-                </span>
+                <Image
+                  src="/brand/marsa-logo-blue.png"
+                  alt="MARSA logo"
+                  width={360}
+                  height={104}
+                  className="h-14 w-auto scale-[1.14] origin-left dark:hidden"
+                  priority
+                />
+                <Image
+                  src="/brand/marsa-logo-blue-white.png"
+                  alt="MARSA logo"
+                  width={360}
+                  height={104}
+                  className="hidden h-14 w-auto scale-[1.14] origin-left dark:block"
+                  priority
+                />
               </Link>
             </div>
             {children}

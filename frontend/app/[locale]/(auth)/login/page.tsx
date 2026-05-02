@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { Eye, EyeOff } from "lucide-react"
 
 import AuthSplitLayout from "@/components/auth/AuthSplitLayout"
 import { Button } from "@/components/ui/button"
@@ -10,11 +11,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/hooks/useAuth"
 import { getFirstError, isValidationError } from "@/lib/api"
+import { Link } from "@/i18n/navigation"
 
 export default function LoginPage() {
+  const t = useTranslations("Auth")
   const { login } = useAuth()
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
+  const [showPassword, setShowPassword] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)
 
@@ -27,12 +31,10 @@ export default function LoginPage() {
     } catch (err) {
       if (isValidationError(err)) {
         setError(
-          getFirstError(err, "email") ??
-          getFirstError(err, "password") ??
-          "Invalid credentials."
+          getFirstError(err, "email") ?? getFirstError(err, "password") ?? t("invalidCredentials")
         )
       } else {
-        setError("Something went wrong. Please try again.")
+        setError(t("genericError"))
       }
     } finally {
       setIsLoading(false)
@@ -41,26 +43,26 @@ export default function LoginPage() {
 
   return (
     <AuthSplitLayout
-      title="Welcome back."
-      subtitle="Log in to your MARSA workspace and continue building with clarity."
+      title={t("loginTitle")}
+      subtitle={t("loginSubtitle")}
       bottom={
         <div className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
+          {t("registerPrompt")}{" "}
           <Link href="/register" className="font-medium text-foreground hover:underline">
-            Create one
+            {t("registerCta")}
           </Link>
         </div>
       }
     >
       <Card className="rounded-3xl shadow-sm">
         <CardHeader>
-          <CardTitle className="text-xl">Login</CardTitle>
-          <CardDescription>Use your email and password.</CardDescription>
+          <CardTitle className="text-xl">{t("loginCardTitle")}</CardTitle>
+          <CardDescription>{t("loginCardDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -74,31 +76,44 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
+              <div className="flex items-center justify-between gap-2">
+                <Label htmlFor="password">{t("password")}</Label>
                 <Link
                   href="/forgot-password"
                   className="text-sm text-muted-foreground hover:text-foreground hover:underline"
                 >
-                  Forgot password?
+                  {t("forgotPassword")}
                 </Link>
               </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={isLoading}
-                className="transition-shadow focus-visible:ring-4 focus-visible:ring-ring/30"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  className="pr-11 transition-shadow focus-visible:ring-4 focus-visible:ring-ring/30"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="absolute end-1 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  disabled={isLoading}
+                >
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </Button>
+              </div>
             </div>
 
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
             <Button type="submit" className="w-full transition-transform hover:-translate-y-0.5" disabled={isLoading}>
-              {isLoading ? "Signing in…" : "Login"}
+              {isLoading ? t("signingIn") : t("signIn")}
             </Button>
           </form>
         </CardContent>
@@ -106,4 +121,3 @@ export default function LoginPage() {
     </AuthSplitLayout>
   )
 }
-

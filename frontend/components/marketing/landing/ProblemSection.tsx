@@ -1,111 +1,133 @@
 "use client"
 
-import { AlertTriangle, LayoutGrid, Wallet } from "lucide-react"
+import { useMemo, useRef } from "react"
+import { useLocale, useTranslations } from "next-intl"
+import { AlertTriangle, Boxes, LayoutGrid, Wallet } from "lucide-react"
+import { motion, useInView } from "framer-motion"
 
 import SectionWrapper from "@/components/marketing/ux/SectionWrapper"
+import { cn } from "@/components/utils"
 
-const CARDS = [
-  {
-    icon: <AlertTriangle className="size-6" />,
-    title: "Confusion",
-    description: "Ideas live in too many places, and decisions get delayed.",
-    bracketColor: "#6C5CE7",
-    dotColor: "#6C5CE780",
-  },
-  {
-    icon: <LayoutGrid className="size-6" />,
-    title: "Lack of structure",
-    description: "You can't tell what's next, so execution becomes reactive.",
-    bracketColor: "#1A9FE0",
-    dotColor: "#1A9FE080",
-  },
-  {
-    icon: <Wallet className="size-6" />,
-    title: "Financial uncertainty",
-    description: "Runway and assumptions drift without a shared model.",
-    bracketColor: "#00BAC5",
-    dotColor: "#00BAC580",
-  },
+/** Lightened mixes so icons read on dark surfaces (pure Anchor Blue (#002D62) disappears on near-black). */
+const ACCENTS = [
+  "var(--marsa-action-teal)",
+  "color-mix(in oklab, var(--marsa-action-teal) 82%, white)",
+  "color-mix(in oklab, var(--marsa-anchor-blue) 44%, white)",
+  "color-mix(in oklab, var(--marsa-action-teal) 68%, white)",
 ] as const
 
-export default function ProblemSection() {
+const ICONS = [
+  AlertTriangle,
+  LayoutGrid,
+  Wallet,
+  Boxes,
+] as const
+
+const containerVariants = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.11, delayChildren: 0.06 },
+  },
+}
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 22 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring" as const, stiffness: 380, damping: 28 },
+  },
+}
+
+function BubbleIcon({
+  accent,
+  Icon,
+  isRtl,
+}: {
+  accent: string
+  Icon: (typeof ICONS)[number]
+  isRtl: boolean
+}) {
   return (
-    <SectionWrapper
-      eyebrow="Why founders get stuck"
-      title="The early stage is messy — MARSA makes it structured."
-      description="Most teams don't lack effort. They lack a clear system that connects strategy, numbers, and execution."
+    <div
+      className={cn(
+        "relative flex shrink-0 items-center",
+        isRtl && "flex-row-reverse"
+      )}
     >
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {CARDS.map((c) => (
-          <div key={c.title} className="group relative">
-            {/* Floating dotted rectangle offset behind card (bottom-right) */}
-            <div
-              aria-hidden
-              style={{
-                position: "absolute",
-                inset: 0,
-                top: 10,
-                left: 10,
-                borderRadius: 20,
-                border: `2px dashed ${c.dotColor}`,
-                pointerEvents: "none",
-                zIndex: 0,
-              }}
-            />
-
-            {/* Card */}
-            <div
-              className="relative z-10 flex flex-col items-center rounded-[20px] bg-card px-6 pb-7 pt-8 text-center transition hover:-translate-y-0.5 hover:shadow-md"
-              style={{ border: `2px dashed ${c.bracketColor}50` }}
-            >
-              {/* Top-left solid L-bracket */}
-              <div
-                aria-hidden
-                style={{
-                  position: "absolute",
-                  top: 14,
-                  left: 14,
-                  width: 22,
-                  height: 22,
-                  borderTop: `3px solid ${c.bracketColor}`,
-                  borderLeft: `3px solid ${c.bracketColor}`,
-                  borderRadius: "4px 0 0 0",
-                }}
-              />
-
-              {/* Top-right solid L-bracket */}
-              <div
-                aria-hidden
-                style={{
-                  position: "absolute",
-                  top: 14,
-                  right: 14,
-                  width: 22,
-                  height: 22,
-                  borderTop: `3px solid ${c.bracketColor}`,
-                  borderRight: `3px solid ${c.bracketColor}`,
-                  borderRadius: "0 4px 0 0",
-                }}
-              />
-
-              {/* Icon */}
-              <div
-                className="mb-4 flex size-14 items-center justify-center rounded-2xl"
-                style={{
-                  background: `${c.bracketColor}12`,
-                  color: c.bracketColor,
-                  border: `1.5px solid ${c.bracketColor}30`,
-                }}
-              >
-                {c.icon}
-              </div>
-
-              <p className="font-semibold text-foreground">{c.title}</p>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.description}</p>
-            </div>
-          </div>
-        ))}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -inset-2.5 rounded-full border-2 border-dashed opacity-[0.38]"
+        style={{ borderColor: accent }}
+      />
+      <div
+        className="relative z-[1] flex size-[3.35rem] items-center justify-center rounded-full border-[3px] bg-background shadow-sm"
+        style={{ borderColor: accent, color: accent }}
+      >
+        <Icon className="size-[1.35rem]" strokeWidth={2.25} aria-hidden />
       </div>
+      <span
+        aria-hidden
+        className={cn(
+          "relative z-[1] h-0 w-0 border-y-[11px] border-y-transparent",
+          isRtl ? "-me-px border-r-[13px]" : "-ms-px border-l-[13px]"
+        )}
+        style={
+          isRtl
+            ? { borderRightColor: accent }
+            : { borderLeftColor: accent }
+        }
+      />
+    </div>
+  )
+}
+
+export default function ProblemSection() {
+  const t = useTranslations("Problem")
+  const locale = useLocale()
+  const isRtl = locale === "ar"
+  const cards = useMemo(() => t.raw("cards") as { title: string; description: string }[], [t])
+
+  const gridRef = useRef<HTMLDivElement>(null)
+  const gridInView = useInView(gridRef, { margin: "-10% 0px", once: true })
+
+  return (
+    <SectionWrapper eyebrow={t("eyebrow")} title={t("title")} description={t("description")}>
+      <motion.div
+        ref={gridRef}
+        className="grid gap-4 sm:grid-cols-2 sm:gap-5"
+        variants={containerVariants}
+        initial="hidden"
+        animate={gridInView ? "show" : "hidden"}
+      >
+        {cards.map((c, idx) => {
+          const accent = ACCENTS[idx] ?? ACCENTS[0]
+          const Icon = ICONS[idx] ?? ICONS[0]
+          return (
+            <motion.div
+              key={c.title}
+              variants={cardVariants}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="will-change-transform"
+            >
+              <div
+                className={cn(
+                  "group flex h-full min-h-[6.5rem] items-center gap-3 rounded-2xl border border-border/70 bg-card p-4 shadow-sm transition-shadow duration-300 sm:gap-4 sm:p-5",
+                  "hover:border-[color-mix(in_oklab,var(--secondary)_35%,var(--border))] hover:shadow-md",
+                  "rtl:flex-row-reverse"
+                )}
+              >
+                <BubbleIcon accent={accent} Icon={Icon} isRtl={isRtl} />
+
+                <div className="min-w-0 flex-1 text-start">
+                  <p className="font-semibold leading-snug text-foreground">{c.title}</p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{c.description}</p>
+                </div>
+              </div>
+            </motion.div>
+          )
+        })}
+      </motion.div>
     </SectionWrapper>
   )
 }

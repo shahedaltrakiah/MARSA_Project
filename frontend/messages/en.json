@@ -1,0 +1,291 @@
+{
+  "Nav": {
+    "home": "Home",
+    "features": "Features",
+    "about": "About",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "login": "Login",
+    "signUp": "Sign up",
+    "start": "Start your startup",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menu": "Menu",
+    "logoAlt": "MARSA logo",
+    "logoHome": "MARSA home"
+  },
+  "LocaleSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "ar": "العربية"
+  },
+  "Footer": {
+    "copyright": "© {year} MARSA",
+    "tagline": "From idea to execution — your startup workspace.",
+    "exploreHeading": "Explore",
+    "legalHeading": "Legal",
+    "accountHeading": "Account",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "forgotPassword": "Forgot password",
+    "accountNav": "Account",
+    "features": "Features",
+    "pricing": "Pricing",
+    "about": "About",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms and Conditions",
+    "refund": "Refund, Cancellation, and Delivery policies",
+    "brandAlt": "MARSA",
+    "legalNav": "Legal"
+  },
+  "Legal": {
+    "privacyTitle": "Privacy Policy",
+    "termsTitle": "Terms and Conditions",
+    "refundTitle": "Refund, Cancellation, and Delivery policies",
+    "lastUpdated": "Last updated: May 1, 2026",
+    "englishOnlyNotice": "This legal document is provided in English.",
+    "termsMetaDescription": "Terms and conditions for using MARSA services at www.marsa.app."
+  },
+  "Hero": {
+    "badge": "MARSA — your startup workspace",
+    "headlineStart": "Go from idea to execution with a",
+    "headlineEnd": " workspace.",
+    "sub": "Build your offering, map your business model, track runway, and ship weekly — with guided prompts and a single source of truth for your startup.",
+    "ctaPrimary": "Start free",
+    "ctaSecondary": "Talk to us",
+    "rotating": ["structured", "clear", "connected", "actionable", "AI‑guided"]
+  },
+  "Problem": {
+    "eyebrow": "Why founders get stuck",
+    "title": "The early stage is messy — MARSA makes it structured.",
+    "description": "Most teams don't lack effort. They lack a clear system that connects strategy, numbers, and execution.",
+    "cards": [
+      {
+        "title": "Confusion",
+        "description": "Ideas live in too many places, and decisions get delayed."
+      },
+      {
+        "title": "Lack of structure",
+        "description": "You can't tell what's next, so execution becomes reactive."
+      },
+      {
+        "title": "Financial uncertainty",
+        "description": "Runway and assumptions drift without a shared model."
+      },
+      {
+        "title": "Fragmented tools",
+        "description": "Spreadsheets, docs, and chats don't connect — context slips between the cracks."
+      }
+    ]
+  },
+  "WhatYouCanDo": {
+    "eyebrow": "What you can do",
+    "title": "A clear workflow for founders.",
+    "description": "Each feature answers a specific question — so you always know what to do next.",
+    "items": [
+      {
+        "title": "Build your idea",
+        "description": "Clarify the problem, customer, and value proposition with guided prompts."
+      },
+      {
+        "title": "Structure your business model",
+        "description": "Map pricing, channels, costs, and key activities in a clean, connected framework."
+      },
+      {
+        "title": "Plan your finances",
+        "description": "Track burn, runway, and targets — and keep assumptions explicit."
+      },
+      {
+        "title": "Manage your tasks",
+        "description": "Turn strategy into weekly execution so your plan becomes progress."
+      },
+      {
+        "title": "Get AI recommendations",
+        "description": "Context-aware suggestions that reduce decision fatigue and keep momentum high."
+      },
+      {
+        "title": "Align your team",
+        "description": "Keep decisions, assumptions, and next actions shared — so everyone executes the same plan."
+      }
+    ]
+  },
+  "HowItWorks": {
+    "eyebrow": "How it works",
+    "title": "A step-by-step flow founders can follow.",
+    "description": "A simple sequence that makes progress feel obvious — and keeps everyone aligned.",
+    "steps": [
+      {
+        "step": "01",
+        "title": "Define",
+        "desc": "Clarify the problem, customer, and value proposition."
+      },
+      {
+        "step": "02",
+        "title": "Model",
+        "desc": "Connect pricing, channels, and costs into one system."
+      },
+      {
+        "step": "03",
+        "title": "Plan",
+        "desc": "Track runway, burn, targets — keep assumptions explicit."
+      },
+      {
+        "step": "04",
+        "title": "Execute",
+        "desc": "Turn strategy into weekly actions and measurable progress."
+      },
+      {
+        "step": "05",
+        "title": "Improve",
+        "desc": "Review results, learn fast, and iterate with confidence."
+      }
+    ]
+  },
+  "Ai": {
+    "eyebrow": "AI recommendations",
+    "title": "Suggestions that are tied to your work — not generic advice.",
+    "body": "MARSA uses your project context to propose next steps, questions to answer, and risks to consider — so you keep moving without guesswork.",
+    "ctaPrimary": "Start your startup",
+    "ctaSecondary": "Explore features",
+    "exampleLabel": "Example suggestion",
+    "aiBadge": "AI",
+    "nextStep": "Next step",
+    "autoUpdates": "Auto-updates",
+    "whyTitle": "Why this helps",
+    "whyBody": "AI output is framed as a concrete action tied to your model and numbers — so it's easy to execute.",
+    "suggestions": [
+      "Your value proposition is clear — now validate pricing with 5 quick customer calls this week.",
+      "Your burn rate implies ~6 months runway. Consider narrowing scope or adding a pre‑sale offer.",
+      "Your acquisition channel is broad. Pick one: LinkedIn outbound or partnerships — then define a weekly target."
+    ]
+  },
+  "Cta": {
+    "eyebrow": "Ready to build?",
+    "title": "Start building your startup today.",
+    "description": "Create your workspace, clarify your model, and move forward with confidence.",
+    "primary": "Start your startup",
+    "secondary": "Contact"
+  },
+  "About": {
+    "badge": "About",
+    "title": "MARSA",
+    "description": "We help entrepreneurs move from idea to execution with a structured workspace for business modeling, financial planning, and action — with AI guidance along the way.",
+    "start": "Start your startup",
+    "exploreFeatures": "Explore features",
+    "missionTitle": "Mission",
+    "missionBody": "Help founders make better decisions faster — with clear structure and calm execution.",
+    "visionTitle": "Vision",
+    "visionBody": "A world where every entrepreneur can build with confidence, not chaos.",
+    "audienceTitle": "Who it's for",
+    "audienceBody": "Solo founders, early teams, and builders validating ideas, planning finances, and executing weekly.",
+    "ctaStrip": "Ready to move from idea to execution with MARSA?",
+    "ctaButton": "Start your startup"
+  },
+  "Contact": {
+    "badge": "Contact",
+    "title": "Get in touch",
+    "description": "Questions, partnerships, or feedback — send a message and we'll get back to you.",
+    "start": "Start your startup",
+    "pricing": "View pricing",
+    "sendTitle": "Send a message",
+    "sendHint": "We typically respond within 1–2 business days.",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "namePlaceholder": "Your name",
+    "emailPlaceholder": "you@company.com",
+    "messagePlaceholder": "Tell us what you're building, and how we can help.",
+    "submit": "Send message",
+    "submitting": "Sending…",
+    "successTitle": "Message sent",
+    "successBody": "Thanks — we received your message. We typically reply within 1–2 business days.",
+    "errorTitle": "Something went wrong",
+    "errorBody": "We couldn't send that just now. Please try again in a moment."
+  },
+  "Features": {
+    "badge": "Features",
+    "title": "A complete workspace for founders.",
+    "description": "MARSA helps you think clearly and execute consistently — with a structured framework, financial tools, and AI guidance.",
+    "start": "Start your startup",
+    "viewPricing": "View pricing",
+    "sections": [
+      {
+        "title": "Idea validation",
+        "description": "Turn your idea into testable assumptions. Capture hypotheses, experiments, learnings, and next decisions.",
+        "bullets": ["Assumption tracking", "Experiment planning", "Decision notes"]
+      },
+      {
+        "title": "Business model builder",
+        "description": "Structure your offering, pricing, channels, costs, and customer segments. Keep everything connected and clear.",
+        "bullets": ["Value proposition", "Channels + pricing", "Cost structure"]
+      },
+      {
+        "title": "Financial wizard",
+        "description": "Plan runway and scenarios without spreadsheet chaos. Make financial decisions grounded and repeatable.",
+        "bullets": ["Runway planning", "Assumptions & scenarios", "Targets & milestones"]
+      },
+      {
+        "title": "Task management",
+        "description": "Transform strategy into weekly actions. Keep execution aligned with the model and goals you set.",
+        "bullets": ["Weekly planning", "Outcome focus", "Simple prioritization"]
+      },
+      {
+        "title": "AI recommendations",
+        "description": "Get context-aware suggestions, next steps, and prompts that reduce decision fatigue as you build.",
+        "bullets": ["Next-step prompts", "Clarity questions", "Workflow guidance"]
+      },
+      {
+        "title": "Trust & security (foundation)",
+        "description": "A clean, modern foundation designed for SaaS reliability. (Placeholder — implementation evolves with backend.)",
+        "bullets": ["Role-ready layout", "Consistent UI system", "Future-proof structure"]
+      }
+    ]
+  },
+  "Pricing": {
+    "badge": "Pricing",
+    "title": "Simple pricing that scales with you.",
+    "description": "Start free, upgrade when you're ready. (Placeholder pricing — can be adjusted anytime.)",
+    "perMonth": "/mo",
+    "popular": "Popular",
+    "cta": "Start your startup",
+    "free": {
+      "name": "Free",
+      "price": "$0",
+      "description": "Start with structure and clarity.",
+      "features": ["1 project", "Core framework", "Notes panel", "Theme switching"]
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "$19",
+      "description": "For founders building weekly momentum.",
+      "features": ["Unlimited projects", "Financial wizard", "AI recommendations", "Priority updates"]
+    },
+    "team": {
+      "name": "Team",
+      "price": "$49",
+      "description": "For early teams collaborating end‑to‑end.",
+      "features": ["Collaboration", "Roles & permissions", "Shared dashboards", "Admin controls"]
+    }
+  },
+  "Auth": {
+    "loginTitle": "Welcome back.",
+    "loginSubtitle": "Log in to your MARSA workspace and continue building with clarity.",
+    "registerTitle": "Create your account",
+    "registerSubtitle": "Start building with MARSA in minutes.",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "invalidCredentials": "Invalid credentials.",
+    "genericError": "Something went wrong. Please try again.",
+    "loginCardTitle": "Login",
+    "loginCardDescription": "Use your email and password.",
+    "signingIn": "Signing in…",
+    "registerPrompt": "Don't have an account?",
+    "registerCta": "Create one"
+  }
+}

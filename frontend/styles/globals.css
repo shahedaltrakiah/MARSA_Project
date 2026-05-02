@@ -36,12 +36,12 @@
 }
 
 :root {
-  /* MARSA Light */
-  --marsa-bg: #ffffff;
-  --marsa-surface: #f5f7fa;
+  /* MARSA Light — Seamless Gray canvas, white elevated surfaces */
+  --marsa-bg: #f5f7fa;
+  --marsa-surface: #ffffff;
   --marsa-border: #e2e8f0;
   --marsa-text: #0f172a;
-  /* Brand */
+  /* Brand: Anchor Blue (primary), Action Teal (CTA / interactive) */
   --marsa-anchor-blue: #002d62;
   --marsa-action-teal: #00c4cc;
 
@@ -58,7 +58,7 @@
   /* Action Teal: CTAs & interactive */
   --secondary: var(--marsa-action-teal);
   --secondary-foreground: #ffffff;
-  --muted: var(--marsa-surface);
+  --muted: color-mix(in oklab, var(--marsa-bg) 70%, var(--marsa-border));
   --muted-foreground: color-mix(in oklab, var(--marsa-text) 60%, transparent);
   --accent: color-mix(in oklab, var(--marsa-action-teal) 14%, var(--marsa-surface));
   --accent-foreground: var(--marsa-text);

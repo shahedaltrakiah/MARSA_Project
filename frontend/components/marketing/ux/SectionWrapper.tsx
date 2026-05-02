@@ -22,7 +22,13 @@ export default function SectionWrapper({
     <section className={cn("mx-auto max-w-6xl px-4 py-12 sm:py-16", className)}>
       <Reveal>
         <div className="max-w-2xl">
-          {eyebrow ? <div className="text-sm font-medium text-muted-foreground">{eyebrow}</div> : null}
+          {eyebrow ? (
+            <div className="text-sm font-semibold tracking-wide">
+              <span className="bg-[linear-gradient(90deg,color-mix(in_oklab,var(--primary)_88%,white),color-mix(in_oklab,var(--secondary)_88%,white))] bg-clip-text text-transparent">
+                {eyebrow}
+              </span>
+            </div>
+          ) : null}
           <h2 className="mt-2 text-balance font-[var(--font-heading)] text-3xl font-semibold tracking-tight sm:text-4xl">
             {title}
           </h2>
