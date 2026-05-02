@@ -44,7 +44,8 @@ export default function RootLayout({
       className={`${inter.variable} ${sora.variable} ${ibmPlexArabic.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      {/* suppressHydrationWarning: extensions often inject attrs on <body> (e.g. cz-shortcut-listen) */}
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="midnight"

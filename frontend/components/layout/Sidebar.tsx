@@ -18,6 +18,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { useAuth } from "@/hooks/useAuth"
 
 type NavItem = {
   label: string
@@ -81,6 +82,20 @@ export default function Sidebar({ projectId }: SidebarProps) {
     href: projectId ? `/app/projects/${projectId}/${item.slug}` : "#",
   }))
 
+  const { user, isLoading: authLoading } = useAuth()
+
+  const name = user?.name
+  const initials = (() => {
+    if (!name?.trim()) return "?"
+    const parts = name.trim().split(/\s+/).filter(Boolean)
+    const s = parts
+      .slice(0, 3)
+      .map((p) => p[0]?.toUpperCase() ?? "")
+      .join("")
+      .slice(0, 2)
+    return s || "?"
+  })()
+
   const accountItems: NavItem[] = [
     {
       label: "Startup Profile",
@@ -93,17 +108,21 @@ export default function Sidebar({ projectId }: SidebarProps) {
 
   return (
     <aside className="flex h-[calc(100vh-3.5rem)] w-[240px] flex-col border-r bg-card">
-      <div className="flex items-center gap-3 p-4">
-        <Avatar className="size-9">
-          <AvatarFallback className="bg-[linear-gradient(135deg,var(--secondary),var(--primary))] text-primary-foreground">
-            U
-          </AvatarFallback>
-        </Avatar>
-        <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-medium">You</div>
+      <div className="flex items-start gap-3 p-4">
+        <div className="flex w-[4.75rem] shrink-0 flex-col items-center gap-1.5">
+          <Avatar className="size-9">
+            <AvatarFallback className="bg-[linear-gradient(135deg,var(--secondary),var(--primary))] text-xs font-semibold text-primary-foreground">
+              {authLoading ? "…" : initials}
+            </AvatarFallback>
+          </Avatar>
+          <p className="w-full truncate text-center text-[11px] font-medium leading-tight text-foreground sm:text-xs">
+            {authLoading ? "…" : user?.name ?? "Account"}
+          </p>
+        </div>
+        <div className="min-w-0 flex-1 pt-1">
           <div className="truncate text-xs text-muted-foreground">Starter workspace</div>
         </div>
-        <Button variant="outline" size="icon-sm" className="shrink-0" aria-label="Quick actions">
+        <Button variant="outline" size="icon-sm" className="shrink-0 self-start" aria-label="Quick actions">
           <span className="text-xs font-semibold">+</span>
         </Button>
       </div>

@@ -1,7 +1,6 @@
 import Image from "next/image"
 import {
   Building2,
-  Compass,
   FileText,
   Globe,
   KeyRound,
@@ -9,11 +8,9 @@ import {
   LogIn,
   Mail,
   RefreshCcw,
-  Scale,
   Shield,
   Tag,
   UserPlus,
-  UsersRound,
 } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 
@@ -33,6 +30,9 @@ export default async function MarketingFooter({ className }: { className?: strin
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
   )
 
+  const sectionTitleClass =
+    "mb-2 font-[var(--font-heading)] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground"
+
   return (
     <footer
       role="contentinfo"
@@ -44,8 +44,8 @@ export default async function MarketingFooter({ className }: { className?: strin
       <div className="h-px w-full bg-gradient-to-r from-primary/80 via-secondary to-primary/80" aria-hidden />
 
       <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-7">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
-          <div className="flex justify-center lg:justify-start lg:flex-1">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-start lg:gap-10 xl:gap-14">
+          <div className="flex shrink-0 justify-center lg:justify-start">
             <Link href="/" className="inline-flex shrink-0" aria-label={t("brandAlt")}>
               <Image
                 src="/brand/marsa-logo-blue.png"
@@ -66,12 +66,10 @@ export default async function MarketingFooter({ className }: { className?: strin
             </Link>
           </div>
 
-          <div className="mx-auto grid w-full max-w-2xl grid-cols-1 gap-8 sm:grid-cols-2 lg:mx-0 lg:ml-auto lg:grid-cols-3 lg:gap-10">
+          {/* Explore | Account | Legal — aligned left next to logo */}
+          <div className="grid w-full max-w-2xl grid-cols-1 gap-8 sm:grid-cols-2 lg:max-w-none lg:grid-cols-3 lg:gap-10">
             <div>
-              <p className="mb-2 flex items-center gap-1.5 font-[var(--font-heading)] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                <Compass className="size-3 text-secondary opacity-80" aria-hidden />
-                {t("exploreHeading")}
-              </p>
+              <p className={sectionTitleClass}>{t("exploreHeading")}</p>
               <nav className="flex flex-col gap-0" aria-label={t("exploreHeading")}>
                 <Link href="/features" className={linkClass}>
                   <LayoutGrid className={navIconClass} aria-hidden />
@@ -93,31 +91,7 @@ export default async function MarketingFooter({ className }: { className?: strin
             </div>
 
             <div>
-              <p className="mb-2 flex items-center gap-1.5 font-[var(--font-heading)] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                <Scale className="size-3 text-secondary opacity-80" aria-hidden />
-                {t("legalHeading")}
-              </p>
-              <nav className="flex flex-col gap-0" aria-label={t("legalNav")}>
-                <Link href="/privacy" className={linkClass}>
-                  <Shield className={navIconClass} aria-hidden />
-                  {t("privacy")}
-                </Link>
-                <Link href="/terms" className={linkClass}>
-                  <FileText className={navIconClass} aria-hidden />
-                  {t("terms")}
-                </Link>
-                <Link href="/refund" className={cn(linkClass, "items-start text-pretty leading-snug")}>
-                  <RefreshCcw className={cn(navIconClass, "mt-0.5")} aria-hidden />
-                  {t("refund")}
-                </Link>
-              </nav>
-            </div>
-
-            <div className="sm:col-span-2 lg:col-span-1">
-              <p className="mb-2 flex items-center gap-1.5 font-[var(--font-heading)] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                <UsersRound className="size-3 text-secondary opacity-80" aria-hidden />
-                {t("accountHeading")}
-              </p>
+              <p className={sectionTitleClass}>{t("accountHeading")}</p>
               <nav className="flex flex-col gap-0" aria-label={t("accountNav")}>
                 <Link href="/login" className={linkClass}>
                   <LogIn className={navIconClass} aria-hidden />
@@ -130,6 +104,24 @@ export default async function MarketingFooter({ className }: { className?: strin
                 <Link href="/forgot-password" className={linkClass}>
                   <KeyRound className={navIconClass} aria-hidden />
                   {t("forgotPassword")}
+                </Link>
+              </nav>
+            </div>
+
+            <div className="sm:col-span-2 lg:col-span-1">
+              <p className={sectionTitleClass}>{t("legalHeading")}</p>
+              <nav className="flex flex-col gap-0" aria-label={t("legalNav")}>
+                <Link href="/privacy" className={linkClass}>
+                  <Shield className={navIconClass} aria-hidden />
+                  {t("privacy")}
+                </Link>
+                <Link href="/terms" className={linkClass}>
+                  <FileText className={navIconClass} aria-hidden />
+                  {t("terms")}
+                </Link>
+                <Link href="/refund" className={cn(linkClass, "items-start text-pretty leading-snug")}>
+                  <RefreshCcw className={cn(navIconClass, "mt-0.5")} aria-hidden />
+                  {t("refund")}
                 </Link>
               </nav>
             </div>

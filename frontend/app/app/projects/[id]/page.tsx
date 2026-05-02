@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/components/utils"
 import CollaboratorsPanel from "@/components/project/CollaboratorsPanel"
+import { FrameworkProgress } from "@/components/project/FrameworkProgress"
 import { useProject } from "@/hooks/useProject"
 
 export default function ProjectPage() {
@@ -106,6 +107,8 @@ export default function ProjectPage() {
           </Link>
         ))}
       </div>
+
+      <FrameworkProgress projectId={projectId} projectRouteId={String(id)} />
 
       {/* Project details */}
       <Card>
