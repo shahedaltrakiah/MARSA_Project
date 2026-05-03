@@ -1,5 +1,8 @@
 <?php
 use App\Http\Controllers\AiSuggestController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\ContentBlockController;
+use App\Http\Controllers\Admin\SiteSettingsAdminController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfileFileController;
@@ -44,4 +47,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/projects/{project}/ai-suggest', [AiSuggestController::class, 'suggest'])
         ->middleware('throttle:ai-suggest');
+
+    Route::prefix('admin')->group(function () {
+        // Admin + super_admin
+        Route::middleware('role:admin,super_admin')->group(function () {
+            Route::get('/users', [AdminUserController::class, 'index']);
+            Route::get('/users/{user}', [AdminUserController::class, 'show']);
+        });
+
+        // Super admin only
+        Route::middleware('role:super_admin')->group(function () {
+            Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole']);
+            Route::put('/site-settings', [SiteSettingsAdminController::class, 'update']);
+            Route::post('/site-settings/logo', [SiteSettingsAdminController::class, 'uploadLogo']);
+            Route::put('/content-blocks/{key}', [ContentBlockController::class, 'update']);
+        });
+    });
 });
