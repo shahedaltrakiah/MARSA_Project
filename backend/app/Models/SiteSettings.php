@@ -9,9 +9,12 @@ class SiteSettings extends Model
 
     public static function current(): self
     {
-        return static::firstOrCreate([], [
-            'primary_color'   => '#002d62',
-            'secondary_color' => '#00c4cc',
-        ]);
+        return static::firstOrCreate(
+            ['id' => 1],
+            [
+                'primary_color'   => '#002d62',
+                'secondary_color' => '#00c4cc',
+            ]
+        );
     }
 }
