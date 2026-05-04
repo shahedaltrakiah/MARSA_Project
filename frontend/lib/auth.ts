@@ -39,3 +39,8 @@ export function storeUser(user: unknown): void {
     secure: process.env.NODE_ENV === 'production',
   })
 }
+
+export function getStoredRole(): string {
+  const user = getStoredUser<{ role?: string }>()
+  return user?.role ?? 'user'
+}

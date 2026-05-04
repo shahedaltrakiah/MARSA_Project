@@ -15,7 +15,7 @@ const fakeProject: Project = {
   name: 'Test Project',
   logo: null,
   description: 'A test project',
-  owner: { id: 1, name: 'Alice', email: 'alice@example.com', created_at: '2024-01-01' },
+  owner: { id: 1, name: 'Alice', email: 'alice@example.com', role: 'user', created_at: '2024-01-01' },
   last_modified_by: null,
   collaborators: [],
   created_at: '2024-01-01T00:00:00Z',

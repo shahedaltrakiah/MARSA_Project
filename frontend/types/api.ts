@@ -2,6 +2,7 @@ export interface User {
   id: number
   name: string
   email: string
+  role: 'user' | 'admin' | 'super_admin'
   created_at: string
 }
 
@@ -42,13 +43,35 @@ export interface StartupProfile {
 
 export type ProjectSectionName =
   | 'offering'
-  | 'business-model'
+  | 'reach'
   | 'customer'
   | 'money'
   | 'assets'
   | 'action'
+  | 'targets'
 
-export type ProjectSectionContent = Record<string, string>
+export type ReachPillar = 'business_model' | 'branding' | 'marketing' | 'sales'
+export type TargetsPillar = 'cash' | 'position' | 'awareness' | 'value'
+
+/** One bullet in a framework subsection workspace (flat sections). */
+export type WorkspacePoint = {
+  id: string
+  text: string
+  starred?: boolean
+  /** ISO date `YYYY-MM-DD` — reserved for targets integration */
+  target_date?: string | null
+}
+
+/** Rich notes + structured points for one tab inside Offering, Customer, etc. */
+export type WorkspaceSubsectionData = {
+  notes: string
+  points: WorkspacePoint[]
+}
+
+export type ProjectSectionContent = Record<
+  string,
+  string | Record<string, string> | WorkspaceSubsectionData
+>
 
 export type CollaboratorRole = 'editor' | 'viewer'
 
@@ -59,11 +82,36 @@ export interface ProjectCollaborator {
   role: CollaboratorRole
 }
 
+export type ProjectIdeaProfileFile = {
+  url: string
+  original_name: string
+}
+
+export type ProjectIdeaProfileData = {
+  business_category?: string
+  /** @deprecated legacy free-text; prefer business_audience */
+  business_type?: string
+  /** B2B / B2C / both — stored as `b2b` | `b2c` | `both` */
+  business_audience?: string
+  stage?: string
+  core_idea?: string
+  problem?: string
+  solution?: string
+  customer_market?: string
+  team?: string
+  traction?: string
+  current_challenge?: string
+  goal_3m?: string
+  files?: ProjectIdeaProfileFile[]
+}
+
 export interface Project {
   id: number
   name: string
   logo: string | null
   description: string | null
+  idea_profile?: ProjectIdeaProfileData | null
+  idea_profile_completed_at?: string | null
   owner: User
   last_modified_by: User | null
   collaborators?: ProjectCollaborator[]

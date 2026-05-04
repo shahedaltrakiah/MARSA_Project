@@ -20,6 +20,19 @@ export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const token = request.cookies.get("marsa_token")?.value
 
+  if (pathname.startsWith('/admin')) {
+    if (!token) {
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
+    const raw = request.cookies.get('marsa_user')?.value
+    const user = raw ? JSON.parse(raw) : null
+    const role = user?.role ?? 'user'
+    if (!['admin', 'super_admin'].includes(role)) {
+      return NextResponse.redirect(new URL('/app/projects', request.url))
+    }
+    return NextResponse.next()
+  }
+
   if (pathname.startsWith("/app")) {
     if (!token) {
       const loginUrl = new URL("/login", request.url)
@@ -33,7 +46,7 @@ export default function middleware(request: NextRequest) {
   const isAuthRoute = ["/login", "/register", "/forgot-password"].includes(basePath)
 
   if (isAuthRoute && token) {
-    return NextResponse.redirect(new URL("/app/projects", request.url))
+    return NextResponse.redirect(new URL("/app/dashboard", request.url))
   }
 
   return intlMiddleware(request)

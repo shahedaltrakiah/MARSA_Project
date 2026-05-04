@@ -21,7 +21,7 @@ const mockPut = jest.mocked(api.put)
 const mockDelete = jest.mocked(api.delete)
 const mockPost = jest.mocked(api.post)
 
-const fakeOwner: User = { id: 1, name: 'Alice', email: 'alice@test.com', created_at: '2024-01-01' }
+const fakeOwner: User = { id: 1, name: 'Alice', email: 'alice@test.com', role: 'user', created_at: '2024-01-01' }
 
 const fakeProject: Project = {
   id: 10,
@@ -59,6 +59,16 @@ describe('useProject', () => {
 
     expect(result.current.project).toEqual(fakeProject)
     expect(mockGet).toHaveBeenCalledWith('/projects/10')
+  })
+
+  it('does not fetch when id is invalid', async () => {
+    const { result } = renderHook(() => useProject(Number.NaN))
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+    expect(mockGet).not.toHaveBeenCalled()
+    expect(result.current.project).toBeNull()
+    expect(result.current.error).toBe('Failed to load project.')
   })
 
   it('sets error on failed fetch', async () => {
