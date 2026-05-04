@@ -33,11 +33,20 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const siteRes = await fetch(`${process.env.BACKEND_URL ?? 'http://localhost:8000'}/api/site`, {
+    next: { revalidate: 60 },
+  }).catch(() => null)
+  const siteSettings = siteRes?.ok
+    ? (await siteRes.json() as { settings: { primary_color: string; secondary_color: string } }).settings
+    : null
+  const primary = siteSettings?.primary_color ?? '#002d62'
+  const secondary = siteSettings?.secondary_color ?? '#00c4cc'
+
   return (
     <html
       lang="en"
@@ -46,6 +55,7 @@ export default function RootLayout({
     >
       {/* suppressHydrationWarning: extensions often inject attrs on <body> (e.g. cz-shortcut-listen) */}
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <style>{`:root { --marsa-anchor-blue: ${primary}; --marsa-action-teal: ${secondary}; }`}</style>
         <ThemeProvider
           attribute="class"
           defaultTheme="midnight"

@@ -1,6 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { useTranslations } from "next-intl"
 import {
@@ -42,11 +43,23 @@ const BULLET_ICONS: ReactNode[][] = [
 
 export default function FeaturesPage() {
   const t = useTranslations("Features")
-  const sections = t.raw("sections") as {
-    title: string
-    description: string
-    bullets: string[]
-  }[]
+  const [apiSections, setApiSections] = useState<{ title: string; description: string; bullets: string[] }[] | null>(null)
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') ?? 'http://localhost:8000'}/api/site`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        const locale = document.documentElement.lang === 'ar' ? 'ar' : 'en'
+        const sections = data?.blocks?.features?.[locale]
+        if (Array.isArray(sections) && sections.length > 0) {
+          setApiSections(sections)
+        }
+      })
+      .catch(() => null)
+  }, [])
+
+  const translationSections = t.raw("sections") as { title: string; description: string; bullets: string[] }[]
+  const sections = apiSections ?? translationSections
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-14">

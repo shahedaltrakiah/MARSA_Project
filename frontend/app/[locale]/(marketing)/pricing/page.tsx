@@ -10,8 +10,18 @@ import { Link } from "@/i18n/navigation"
 
 const TIER_IDS = ["free", "pro", "team"] as const
 
-export default async function PricingPage() {
+export default async function PricingPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
   const t = await getTranslations("Pricing")
+
+  const siteRes = await fetch(`${process.env.BACKEND_URL ?? 'http://localhost:8000'}/api/site`, {
+    next: { revalidate: 60 },
+  }).catch(() => null)
+  const siteBlocks = siteRes?.ok ? (await siteRes.json())?.blocks : null
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-14">
@@ -27,12 +37,15 @@ export default async function PricingPage() {
 
       <div className="grid gap-4 md:grid-cols-3">
         {TIER_IDS.map((id) => {
-          const tier = t.raw(id) as {
+          const apiTierKey = `pricing_${id}` as const
+          const apiTier = siteBlocks?.[apiTierKey]?.[locale] as { name: string; price: string; description: string; features: string[] } | undefined
+          const translationTier = t.raw(id) as {
             name: string
             price: string
             description: string
             features: string[]
           }
+          const tier = apiTier ?? translationTier
           const highlighted = id === "pro"
           return (
             <Card
