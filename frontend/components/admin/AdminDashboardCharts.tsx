@@ -112,7 +112,7 @@ export function AdminDashboardCharts({ stats, labels }: Props) {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number, name: string) => [value, name]}
+                  formatter={(value, name) => [value, name]}
                   contentStyle={{
                     borderRadius: "8px",
                     border: "1px solid hsl(var(--border))",
