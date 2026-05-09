@@ -54,32 +54,24 @@ export default function UserMenu() {
         <DropdownMenuGroup>
           {staff ? (
             <>
-              <DropdownMenuItem asChild>
-                <Link href="/admin/dashboard" className="flex cursor-pointer items-center gap-2">
-                  <LayoutDashboard className="size-4 opacity-70" />
-                  {t("adminDashboard")}
-                </Link>
+              <DropdownMenuItem render={<Link href="/admin/dashboard" className="flex cursor-pointer items-center gap-2" />}>
+                <LayoutDashboard className="size-4 opacity-70" />
+                {t("adminDashboard")}
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/admin/profile" className="flex cursor-pointer items-center gap-2">
-                  <Shield className="size-4 opacity-70" />
-                  {t("adminAccount")}
-                </Link>
+              <DropdownMenuItem render={<Link href="/admin/profile" className="flex cursor-pointer items-center gap-2" />}>
+                <Shield className="size-4 opacity-70" />
+                {t("adminAccount")}
               </DropdownMenuItem>
             </>
           ) : (
             <>
-              <DropdownMenuItem asChild>
-                <Link href="/app/projects" className="flex cursor-pointer items-center gap-2">
-                  <LayoutDashboard className="size-4 opacity-70" />
-                  {t("workspace")}
-                </Link>
+              <DropdownMenuItem render={<Link href="/app/projects" className="flex cursor-pointer items-center gap-2" />}>
+                <LayoutDashboard className="size-4 opacity-70" />
+                {t("workspace")}
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/app/profile" className="flex cursor-pointer items-center gap-2">
-                  <User className="size-4 opacity-70" />
-                  {t("accountSettings")}
-                </Link>
+              <DropdownMenuItem render={<Link href="/app/profile" className="flex cursor-pointer items-center gap-2" />}>
+                <User className="size-4 opacity-70" />
+                {t("accountSettings")}
               </DropdownMenuItem>
             </>
           )}
