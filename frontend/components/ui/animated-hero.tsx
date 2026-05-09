@@ -58,7 +58,7 @@ function Hero({ fillViewport }: HeroProps = {}) {
       className={cn(
         "relative w-full overflow-x-clip px-4",
         fillViewport
-          ? "flex min-h-[calc(100dvh-3.5rem)] flex-col justify-center pb-12 pt-8 sm:min-h-[calc(100dvh-4rem)] sm:pb-16 sm:pt-10"
+          ? "flex min-h-[calc(100dvh-5rem)] flex-col justify-center pb-12 pt-8 sm:min-h-[calc(100dvh-6rem)] sm:pb-16 sm:pt-10"
           : "pb-8 pt-4 sm:pb-10 sm:pt-5"
       )}
     >

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Requests;
 
 use App\Models\Project;
@@ -10,7 +11,17 @@ class StoreCollaboratorRequest extends FormRequest
     public function authorize(): bool
     {
         $project = $this->route('project');
-        return $project instanceof Project && $this->user()->can('delete', $project);
+
+        return $project instanceof Project && $this->user()->can('update', $project);
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('email')) {
+            $this->merge([
+                'email' => strtolower(trim((string) $this->input('email'))),
+            ]);
+        }
     }
 
     public function rules(): array
@@ -19,7 +30,6 @@ class StoreCollaboratorRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
-                Rule::exists('users', 'email'),
             ],
             'role' => ['required', Rule::in(['editor', 'viewer'])],
         ];
@@ -27,8 +37,6 @@ class StoreCollaboratorRequest extends FormRequest
 
     public function messages(): array
     {
-        return [
-            'email.exists' => 'No registered user found with this email address.',
-        ];
+        return [];
     }
 }

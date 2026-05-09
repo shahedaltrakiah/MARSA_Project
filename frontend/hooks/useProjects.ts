@@ -1,8 +1,9 @@
-'use client'
+"use client"
 
-import { useCallback, useEffect, useState } from 'react'
-import api from '@/lib/api'
-import type { Project } from '@/types/api'
+import { useCallback, useEffect, useState } from "react"
+import { useTranslations } from "next-intl"
+import api from "@/lib/api"
+import type { Project } from "@/types/api"
 
 interface UseProjectsResult {
   projects: Project[]
@@ -12,6 +13,7 @@ interface UseProjectsResult {
 }
 
 export function useProjects(): UseProjectsResult {
+  const t = useTranslations("Workspace.projects")
   const [projects, setProjects] = useState<Project[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -20,14 +22,14 @@ export function useProjects(): UseProjectsResult {
     setIsLoading(true)
     setError(null)
     try {
-      const res = await api.get<{ data: Project[] }>('/projects')
+      const res = await api.get<{ data: Project[] }>("/projects")
       setProjects(res.data.data)
     } catch {
-      setError('Failed to load projects. Please try again.')
+      setError(t("loadError"))
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     fetchProjects()

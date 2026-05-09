@@ -1,11 +1,14 @@
-'use client'
+"use client"
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import api from '@/lib/api'
-import type { AdminUser } from '@/types/admin'
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+
+import { useAdminI18n } from "@/components/admin/AdminI18nContext"
+import api from "@/lib/api"
+import type { AdminUser } from "@/types/admin"
 
 export default function AdminUsersPage() {
+  const { t } = useAdminI18n()
   const [users, setUsers] = useState<AdminUser[]>([])
   const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 })
   const [loading, setLoading] = useState(true)
@@ -14,7 +17,7 @@ export default function AdminUsersPage() {
   async function fetchUsers(page = 1) {
     setLoading(true)
     try {
-      const res = await api.get(`/admin/users?page=${page}`)
+      const res = await api.get(`/admin/users?scope=users&page=${page}`)
       setUsers(res.data.data)
       setMeta(res.data.meta)
     } finally {
@@ -22,7 +25,9 @@ export default function AdminUsersPage() {
     }
   }
 
-  useEffect(() => { fetchUsers(1) }, [])
+  useEffect(() => {
+    void fetchUsers(1)
+  }, [])
 
   const roleBadgeClass = (role: string) => {
     if (role === 'super_admin') return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
@@ -32,7 +37,7 @@ export default function AdminUsersPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-6">Users</h1>
+      <h1 className="mb-6 text-2xl font-semibold">{t.navMemberDirectory}</h1>
       {loading ? (
         <div className="text-muted-foreground">Loading…</div>
       ) : (

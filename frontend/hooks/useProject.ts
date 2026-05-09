@@ -9,6 +9,7 @@ interface UseProjectResult {
   project: Project | null
   isLoading: boolean
   error: string | null
+  refetch: () => Promise<void>
   update: (data: { name: string; description: string | null }) => Promise<void>
   remove: () => Promise<void>
   clone: () => Promise<void>
@@ -25,6 +26,12 @@ export function useProject(id: number): UseProjectResult {
   const fetchProject = useCallback(async () => {
     setIsLoading(true)
     setError(null)
+    if (!Number.isFinite(id) || id < 1) {
+      setProject(null)
+      setError('Failed to load project.')
+      setIsLoading(false)
+      return
+    }
     try {
       const res = await api.get<{ data: Project }>(`/projects/${id}`)
       setProject(res.data.data)
@@ -32,6 +39,21 @@ export function useProject(id: number): UseProjectResult {
       setError('Failed to load project.')
     } finally {
       setIsLoading(false)
+    }
+  }, [id])
+
+  const refetch = useCallback(async () => {
+    setError(null)
+    if (!Number.isFinite(id) || id < 1) {
+      setProject(null)
+      setError('Failed to load project.')
+      return
+    }
+    try {
+      const res = await api.get<{ data: Project }>(`/projects/${id}`)
+      setProject(res.data.data)
+    } catch {
+      setError('Failed to load project.')
     }
   }, [id])
 
@@ -63,25 +85,33 @@ export function useProject(id: number): UseProjectResult {
         email,
         role,
       })
-      setProject(res.data.data)
+      if (res.data?.data) {
+        setProject(res.data.data)
+      } else {
+        await refetch()
+      }
     },
-    [id]
+    [id, refetch]
   )
 
   const removeCollaborator = useCallback(
     async (userId: number) => {
-      await api.delete(`/projects/${id}/collaborators/${userId}`)
-      setProject((prev) =>
-        prev
-          ? {
-              ...prev,
-              collaborators: prev.collaborators?.filter((c) => c.id !== userId),
-            }
-          : prev
-      )
+      const res = await api.delete<{ data: Project }>(`/projects/${id}/collaborators/${userId}`)
+      if (res.data?.data) {
+        setProject(res.data.data)
+      } else {
+        setProject((prev) =>
+          prev
+            ? {
+                ...prev,
+                collaborators: prev.collaborators?.filter((c) => c.id !== userId),
+              }
+            : prev
+        )
+      }
     },
     [id]
   )
 
-  return { project, isLoading, error, update, remove, clone, inviteCollaborator, removeCollaborator }
+  return { project, isLoading, error, refetch, update, remove, clone, inviteCollaborator, removeCollaborator }
 }

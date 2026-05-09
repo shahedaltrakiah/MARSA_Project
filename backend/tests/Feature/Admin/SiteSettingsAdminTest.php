@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature\Admin;
 
 use App\Models\SiteSettings;
@@ -20,9 +21,9 @@ class SiteSettingsAdminTest extends TestCase
 
     public function test_super_admin_can_update_colors(): void
     {
-        $this->withHeader('Authorization', 'Bearer ' . $this->token('super_admin'))
+        $this->withHeader('Authorization', 'Bearer '.$this->token('super_admin'))
             ->putJson('/api/admin/site-settings', [
-                'primary_color'   => '#123456',
+                'primary_color' => '#123456',
                 'secondary_color' => '#abcdef',
             ])
             ->assertOk()
@@ -31,16 +32,32 @@ class SiteSettingsAdminTest extends TestCase
         $this->assertDatabaseHas('site_settings', ['primary_color' => '#123456']);
     }
 
-    public function test_admin_cannot_update_site_settings(): void
+    public function test_admin_without_branding_permission_cannot_update_site_settings(): void
     {
-        $this->withHeader('Authorization', 'Bearer ' . $this->token('admin'))
+        $this->withHeader('Authorization', 'Bearer '.$this->token('admin'))
             ->putJson('/api/admin/site-settings', ['primary_color' => '#123456'])
             ->assertForbidden();
     }
 
+    public function test_admin_with_branding_permission_can_update_site_settings(): void
+    {
+        $token = User::factory()->create([
+            'role' => 'admin',
+            'admin_site_permissions' => ['branding'],
+        ])->createToken('test')->plainTextToken;
+
+        $this->withHeader('Authorization', 'Bearer '.$token)
+            ->putJson('/api/admin/site-settings', [
+                'primary_color' => '#abcdef',
+                'secondary_color' => '#fedcba',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.primary_color', '#abcdef');
+    }
+
     public function test_color_must_be_valid_hex(): void
     {
-        $this->withHeader('Authorization', 'Bearer ' . $this->token('super_admin'))
+        $this->withHeader('Authorization', 'Bearer '.$this->token('super_admin'))
             ->putJson('/api/admin/site-settings', ['primary_color' => 'not-a-color'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['primary_color']);
@@ -50,7 +67,7 @@ class SiteSettingsAdminTest extends TestCase
     {
         Storage::fake('public');
 
-        $this->withHeader('Authorization', 'Bearer ' . $this->token('super_admin'))
+        $this->withHeader('Authorization', 'Bearer '.$this->token('super_admin'))
             ->post('/api/admin/site-settings/logo', [
                 'logo' => UploadedFile::fake()->image('logo.png', 200, 200),
             ])

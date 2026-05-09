@@ -1,10 +1,12 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
+use App\Models\ProjectInvitation;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,19 +18,69 @@ class AuthController extends Controller
 {
     public function register(RegisterRequest $request): JsonResponse
     {
+        $validated = $request->validated();
+
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
 
         $user->startupProfile()->create();
+
+        $joinedProjectId = $this->acceptPendingProjectInvitation($user, $validated['invite_token'] ?? null);
+
+        $user->sendEmailVerificationNotification();
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'user' => new UserResource($user),
+        $payload = [
+            'user' => new UserResource($user->fresh()),
             'token' => $token,
-        ], 201);
+        ];
+
+        if ($joinedProjectId !== null) {
+            $payload['meta'] = ['joined_project_id' => $joinedProjectId];
+        }
+
+        return response()->json($payload, 201);
+    }
+
+    private function acceptPendingProjectInvitation(User $user, ?string $inviteToken): ?int
+    {
+        if ($inviteToken === null || $inviteToken === '') {
+            return null;
+        }
+
+        $invitation = ProjectInvitation::query()
+            ->where('token', $inviteToken)
+            ->whereNull('accepted_at')
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if ($invitation === null) {
+            return null;
+        }
+
+        if (strcasecmp((string) $invitation->email, (string) $user->email) !== 0) {
+            return null;
+        }
+
+        $project = $invitation->project;
+
+        if ($project->isOwnedBy($user)) {
+            $invitation->delete();
+
+            return null;
+        }
+
+        $project->collaborators()->syncWithoutDetaching([
+            $user->id => ['role' => $invitation->role],
+        ]);
+
+        $invitation->update(['accepted_at' => now()]);
+
+        return $project->id;
     }
 
     public function login(LoginRequest $request): JsonResponse
@@ -52,6 +104,7 @@ class AuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
+
         return response()->json(['message' => 'Logged out successfully']);
     }
 
@@ -70,8 +123,8 @@ class AuthController extends Controller
                 $token = Password::createToken($user);
                 $base = rtrim(config('app.frontend_url', 'http://localhost:3001'), '/');
                 $response['dev_reset_url'] = $base
-                    . '/reset-password?token=' . $token
-                    . '&email=' . rawurlencode($user->email);
+                    .'/reset-password?token='.$token
+                    .'&email='.rawurlencode($user->email);
             }
         }
 
@@ -81,9 +134,9 @@ class AuthController extends Controller
     public function resetPassword(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'token'                 => ['required', 'string'],
-            'email'                 => ['required', 'email'],
-            'password'              => ['required', 'string', 'min:8', 'confirmed'],
+            'token' => ['required', 'string'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
             'password_confirmation' => ['required', 'string'],
         ]);
 
@@ -104,11 +157,27 @@ class AuthController extends Controller
         ]);
     }
 
+    public function me(Request $request): JsonResponse
+    {
+        return response()->json(['user' => new UserResource($request->user())]);
+    }
+
+    public function updateMe(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $request->user()->update(['name' => $validated['name']]);
+
+        return response()->json(['user' => new UserResource($request->user()->fresh())]);
+    }
+
     public function changePassword(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'current_password'      => ['required', 'string'],
-            'password'              => ['required', 'string', 'min:8', 'confirmed'],
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
             'password_confirmation' => ['required', 'string'],
         ]);
 

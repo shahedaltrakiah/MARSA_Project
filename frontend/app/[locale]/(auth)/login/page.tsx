@@ -1,10 +1,12 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { Eye, EyeOff } from "lucide-react"
 
 import AuthSplitLayout from "@/components/auth/AuthSplitLayout"
+import { WelcomeFlashDialog } from "@/components/auth/WelcomeFlashDialog"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -15,12 +17,14 @@ import { Link } from "@/i18n/navigation"
 
 export default function LoginPage() {
   const t = useTranslations("Auth")
+  const router = useRouter()
   const { login } = useAuth()
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
   const [showPassword, setShowPassword] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)
+  const [welcomeOpen, setWelcomeOpen] = React.useState(false)
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -28,6 +32,7 @@ export default function LoginPage() {
     setIsLoading(true)
     try {
       await login(email, password)
+      setWelcomeOpen(true)
     } catch (err) {
       if (isValidationError(err)) {
         setError(
@@ -42,6 +47,17 @@ export default function LoginPage() {
   }
 
   return (
+    <>
+    <WelcomeFlashDialog
+      open={welcomeOpen}
+      onOpenChange={(next) => {
+        setWelcomeOpen(next)
+        if (!next) router.push("/app/dashboard")
+      }}
+      title={t("welcomeFlashTitleBack")}
+      message={t("welcomeBackFlash")}
+      continueLabel={t("welcomeFlashContinue")}
+    />
     <AuthSplitLayout
       title={t("loginTitle")}
       subtitle={t("loginSubtitle")}
@@ -119,5 +135,6 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </AuthSplitLayout>
+    </>
   )
 }

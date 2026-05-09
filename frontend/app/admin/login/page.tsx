@@ -30,7 +30,7 @@ export default function AdminLoginPage() {
 
       setToken(res.data.token)
       storeUser(user)
-      router.push('/admin/users')
+      router.push("/admin/dashboard")
     } catch (err) {
       if (isValidationError(err)) {
         setError(getFirstError(err, 'email') ?? getFirstError(err, 'password') ?? 'Invalid credentials.')

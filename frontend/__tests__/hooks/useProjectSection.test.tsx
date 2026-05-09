@@ -55,10 +55,10 @@ describe('useProjectSection', () => {
 
   it('calls correct endpoint for section', async () => {
     mockGet.mockResolvedValue({ data: { data: {} } })
-    renderHook(() => useProjectSection(42, 'business-model'))
+    renderHook(() => useProjectSection(42, 'reach'))
 
     await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(1))
-    expect(mockGet).toHaveBeenCalledWith('/projects/42/sections/business-model')
+    expect(mockGet).toHaveBeenCalledWith('/projects/42/sections/reach')
   })
 
   it('save() calls PUT and updates content', async () => {

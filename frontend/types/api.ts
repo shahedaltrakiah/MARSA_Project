@@ -1,14 +1,24 @@
+export type AdminSiteSection = 'branding' | 'hero' | 'features' | 'pricing'
+
 export interface User {
   id: number
   name: string
   email: string
+  /** ISO datetime when email was verified; null until user confirms via link */
+  email_verified_at?: string | null
   role: 'user' | 'admin' | 'super_admin'
   created_at: string
+  /** Present when `role` is `admin` — which marketing site editor sections this staff user may change. */
+  admin_site_permissions?: AdminSiteSection[] | null
 }
 
 export interface AuthResponse {
   user: User
   token: string
+  /** Present when registration completed a pending project invitation */
+  meta?: {
+    joined_project_id?: number
+  }
 }
 
 export type StartupStage =

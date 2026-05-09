@@ -25,9 +25,16 @@ export default function middleware(request: NextRequest) {
     if (pathname === '/admin/login') {
       if (token) {
         const raw = request.cookies.get('marsa_user')?.value
-        const user = raw ? JSON.parse(raw) : null
+        let user: { role?: string } | null = null
+        if (raw) {
+          try {
+            user = JSON.parse(raw) as { role?: string }
+          } catch {
+            user = null
+          }
+        }
         if (['admin', 'super_admin'].includes(user?.role ?? '')) {
-          return NextResponse.redirect(new URL('/admin/users', request.url))
+          return NextResponse.redirect(new URL('/admin/dashboard', request.url))
         }
       }
       return NextResponse.next()
@@ -37,7 +44,14 @@ export default function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/admin/login', request.url))
     }
     const raw = request.cookies.get('marsa_user')?.value
-    const user = raw ? JSON.parse(raw) : null
+    let user: { role?: string } | null = null
+    if (raw) {
+      try {
+        user = JSON.parse(raw) as { role?: string }
+      } catch {
+        user = null
+      }
+    }
     const role = user?.role ?? 'user'
     if (!['admin', 'super_admin'].includes(role)) {
       return NextResponse.redirect(new URL('/admin/login', request.url))

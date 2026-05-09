@@ -2,8 +2,6 @@ export type AdminLocale = "en" | "ar"
 
 export type AdminMsg = {
   title: string
-  /** Public marketing site — what admins are editing */
-  viewMarketingSite: string
   navDashboard: string
   navEntrepreneurs: string
   /** Directory of registered product users (not “workspace” wording in admin) */
@@ -55,12 +53,33 @@ export type AdminMsg = {
   fieldRole: string
   createStaffSubmit: string
   createStaffSuccess: string
+  /** /admin/profile — site staff account (not product workspace) */
+  profilePageTitle: string
+  profilePageSubtitle: string
+  profileIdentityCard: string
+  profilePasswordCard: string
+  labelDisplayName: string
+  labelEmailReadonly: string
+  labelRole: string
+  labelCurrentPassword: string
+  labelNewPassword: string
+  labelConfirmNewPassword: string
+  btnSaveDisplayName: string
+  btnChangePassword: string
+  successNameSaved: string
+  successPasswordChanged: string
+  errNameShort: string
+  errPasswordShort: string
+  errPasswordMismatch: string
+  saving: string
+  errGeneric: string
+  cancel: string
+  edit: string
 }
 
 export const adminMessages: Record<AdminLocale, AdminMsg> = {
   en: {
     title: "MARSA Admin",
-    viewMarketingSite: "View marketing site",
     navDashboard: "Dashboard",
     navEntrepreneurs: "Entrepreneur profiles",
     navMemberDirectory: "Member directory",
@@ -112,10 +131,31 @@ export const adminMessages: Record<AdminLocale, AdminMsg> = {
     fieldRole: "Role",
     createStaffSubmit: "Create account",
     createStaffSuccess: "Account created successfully.",
+    profilePageTitle: "Admin account",
+    profilePageSubtitle:
+      "This login is for managing the public marketing site and member directory — not for building projects in the product workspace.",
+    profileIdentityCard: "Display name & email",
+    profilePasswordCard: "Change password",
+    labelDisplayName: "Display name",
+    labelEmailReadonly: "Email",
+    labelRole: "Role",
+    labelCurrentPassword: "Current password",
+    labelNewPassword: "New password",
+    labelConfirmNewPassword: "Confirm new password",
+    btnSaveDisplayName: "Save name",
+    btnChangePassword: "Update password",
+    successNameSaved: "Name updated.",
+    successPasswordChanged: "Password updated.",
+    errNameShort: "Name must be at least 2 characters.",
+    errPasswordShort: "Password must be at least 8 characters.",
+    errPasswordMismatch: "New passwords do not match.",
+    saving: "Saving…",
+    errGeneric: "Something went wrong.",
+    cancel: "Cancel",
+    edit: "Edit",
   },
   ar: {
     title: "إدارة مارسا",
-    viewMarketingSite: "عرض الموقع العام",
     navDashboard: "لوحة التحكم",
     navEntrepreneurs: "ملفات رواد الأعمال",
     navMemberDirectory: "دليل الأعضاء",
@@ -167,5 +207,27 @@ export const adminMessages: Record<AdminLocale, AdminMsg> = {
     fieldRole: "الدور",
     createStaffSubmit: "إنشاء الحساب",
     createStaffSuccess: "تم إنشاء الحساب بنجاح.",
+    profilePageTitle: "حساب المشرف",
+    profilePageSubtitle:
+      "هذا الدخول لإدارة الموقع العام ودليل الأعضاء — وليس لبناء المشاريع في مساحة المنتج.",
+    profileIdentityCard: "الاسم المعروض والبريد",
+    profilePasswordCard: "تغيير كلمة المرور",
+    labelDisplayName: "الاسم المعروض",
+    labelEmailReadonly: "البريد الإلكتروني",
+    labelRole: "الدور",
+    labelCurrentPassword: "كلمة المرور الحالية",
+    labelNewPassword: "كلمة المرور الجديدة",
+    labelConfirmNewPassword: "تأكيد كلمة المرور",
+    btnSaveDisplayName: "حفظ الاسم",
+    btnChangePassword: "تحديث كلمة المرور",
+    successNameSaved: "تم تحديث الاسم.",
+    successPasswordChanged: "تم تحديث كلمة المرور.",
+    errNameShort: "الاسم يجب أن يكون حرفين على الأقل.",
+    errPasswordShort: "كلمة المرور 8 أحرف على الأقل.",
+    errPasswordMismatch: "كلمتا المرور غير متطابقتين.",
+    saving: "جاري الحفظ…",
+    errGeneric: "حدث خطأ.",
+    cancel: "إلغاء",
+    edit: "تعديل",
   },
 }

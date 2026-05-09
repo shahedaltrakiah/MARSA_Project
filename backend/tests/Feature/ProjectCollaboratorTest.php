@@ -1,9 +1,13 @@
 <?php
+
 namespace Tests\Feature;
 
+use App\Mail\CollaboratorAddedToProjectMail;
+use App\Mail\ProjectInvitationMail;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class ProjectCollaboratorTest extends TestCase
@@ -15,6 +19,7 @@ class ProjectCollaboratorTest extends TestCase
         $owner = User::factory()->create();
         $token = $owner->createToken('test')->plainTextToken;
         $project = Project::factory()->create(['owner_id' => $owner->id]);
+
         return [$owner, $token, $project];
     }
 
@@ -32,34 +37,55 @@ class ProjectCollaboratorTest extends TestCase
 
     public function test_owner_can_invite_collaborator_by_email(): void
     {
+        Mail::fake();
+
         [$owner, $token, $project] = $this->ownerWithProject();
         $invitee = User::factory()->create(['email' => 'invitee@example.com']);
 
-        $this->withHeader('Authorization', "Bearer {$token}")
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
             ->postJson("/api/projects/{$project->id}/collaborators", [
                 'email' => 'invitee@example.com',
                 'role' => 'editor',
             ])
             ->assertStatus(201);
 
+        $response->assertJsonPath('meta.collaborator_added', true);
+
         $this->assertDatabaseHas('project_collaborators', [
             'project_id' => $project->id,
             'user_id' => $invitee->id,
             'role' => 'editor',
         ]);
+
+        Mail::assertSent(CollaboratorAddedToProjectMail::class, function (CollaboratorAddedToProjectMail $mail) use ($invitee, $project): bool {
+            return $mail->hasTo($invitee->email)
+                && $mail->project->id === $project->id
+                && $mail->role === 'editor';
+        });
     }
 
-    public function test_invite_fails_if_email_not_registered(): void
+    public function test_invite_unregistered_email_sends_project_invitation_mail(): void
     {
+        Mail::fake();
+
         [$owner, $token, $project] = $this->ownerWithProject();
 
-        $this->withHeader('Authorization', "Bearer {$token}")
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
             ->postJson("/api/projects/{$project->id}/collaborators", [
-                'email' => 'nobody@example.com',
+                'email' => 'newuser@example.com',
                 'role' => 'viewer',
             ])
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['email']);
+            ->assertStatus(201);
+
+        $response->assertJsonPath('meta.invitation_sent', true);
+
+        $this->assertDatabaseHas('project_invitations', [
+            'project_id' => $project->id,
+            'email' => 'newuser@example.com',
+            'role' => 'viewer',
+        ]);
+
+        Mail::assertSent(ProjectInvitationMail::class);
     }
 
     public function test_owner_can_remove_collaborator(): void

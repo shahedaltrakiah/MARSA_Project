@@ -55,6 +55,9 @@ return [
     'url' => env('APP_URL', 'http://localhost'),
     'frontend_url' => env('FRONTEND_URL', 'http://localhost:3001'),
 
+    /** First URL segment for invite/register links (matches Next.js `[locale]` routes). */
+    'frontend_default_locale' => env('FRONTEND_DEFAULT_LOCALE', 'en'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

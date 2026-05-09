@@ -1,48 +1,84 @@
 "use client"
 
 import * as React from "react"
-import { useParams } from "next/navigation"
+import { useParams, usePathname, useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 
 import api from "@/lib/api"
+import { useProjectWorkspaceTitle } from "@/contexts/ProjectWorkspaceTitleContext"
 import type { ApiResponse, Project } from "@/types/api"
 
-import NotesPanel from "@/components/layout/NotesPanel"
-import Sidebar from "@/components/layout/Sidebar"
-import Topbar from "@/components/layout/Topbar"
+/** Idea profile + project settings are reachable before the framework is unlocked. */
+function isAllowedPathWhenIdeaIncomplete(pathname: string | null, projectId: string): boolean {
+  if (!pathname) return false
+  if (pathname.includes(`/app/projects/${projectId}/idea-profile`)) return true
+  return new RegExp(`^/app/projects/${projectId}/settings(/|$)`).test(pathname)
+}
 
 export default function ProjectWorkspaceLayout({ children }: { children: React.ReactNode }) {
   const { id } = useParams<{ id: string }>()
-  const [projectName, setProjectName] = React.useState<string>("Loading…")
+  const pathname = usePathname()
+  const router = useRouter()
+
+  React.useEffect(() => {
+    if (!/^\d+$/.test(id)) {
+      router.replace("/app/projects")
+    }
+  }, [id, router])
+  const {
+    setProjectTitle,
+    ideaProfileComplete,
+    setIdeaProfileComplete,
+    setProjectRouteId,
+  } = useProjectWorkspaceTitle()
+  const tLayout = useTranslations("Workspace.layout")
+  const tProject = useTranslations("Workspace.project")
 
   React.useEffect(() => {
     let mounted = true
+    setProjectTitle(tLayout("loadingProject"))
+    setIdeaProfileComplete(null)
+    setProjectRouteId(id)
+
     async function load() {
+      if (!/^\d+$/.test(id)) {
+        if (!mounted) return
+        setProjectTitle(tProject("fallbackName"))
+        setIdeaProfileComplete(null)
+        return
+      }
       try {
         const res = await api.get<ApiResponse<Project>>(`/projects/${id}`)
         if (!mounted) return
-        setProjectName(res.data.data.name)
+        const p = res.data.data
+        setProjectTitle(p.name)
+        setIdeaProfileComplete(Boolean(p.idea_profile_completed_at))
       } catch {
         if (!mounted) return
-        setProjectName("Project")
+        setProjectTitle(tProject("fallbackName"))
+        setIdeaProfileComplete(null)
       }
     }
+
     void load()
     return () => {
       mounted = false
     }
-  }, [id])
+  }, [id, setIdeaProfileComplete, setProjectRouteId, setProjectTitle, tLayout, tProject])
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Topbar projectName={projectName} />
-      <div className="mx-auto flex max-w-[1600px]">
-        <Sidebar projectId={id} />
-        <main className="min-w-0 flex-1 bg-background">
-          <div className="h-[calc(100vh-3.5rem)] overflow-auto p-6">{children}</div>
-        </main>
-        <NotesPanel />
-      </div>
-    </div>
-  )
+  React.useEffect(() => {
+    if (ideaProfileComplete !== false) return
+    if (isAllowedPathWhenIdeaIncomplete(pathname, id)) return
+    router.replace(`/app/projects/${id}/idea-profile`)
+  }, [ideaProfileComplete, id, pathname, router])
+
+  React.useEffect(() => {
+    return () => {
+      setProjectTitle(null)
+      setIdeaProfileComplete(null)
+      setProjectRouteId(null)
+    }
+  }, [id, setIdeaProfileComplete, setProjectRouteId, setProjectTitle])
+
+  return <>{children}</>
 }
-

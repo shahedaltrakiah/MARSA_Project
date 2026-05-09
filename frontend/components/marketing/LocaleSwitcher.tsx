@@ -32,7 +32,7 @@ export function LocaleSwitcher({ className }: { className?: string }) {
           )}
           onClick={() => router.replace(pathname, { locale: loc })}
         >
-          {loc === "ar" ? "العربية" : "EN"}
+          {loc === "ar" ? "ع" : "EN"}
         </button>
       ))}
     </div>

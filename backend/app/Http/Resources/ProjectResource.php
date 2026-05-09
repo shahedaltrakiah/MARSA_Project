@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -13,6 +14,8 @@ class ProjectResource extends JsonResource
             'name' => $this->name,
             'logo' => $this->logo,
             'description' => $this->description,
+            'idea_profile' => $this->idea_profile ?? (object) [],
+            'idea_profile_completed_at' => $this->idea_profile_completed_at,
             'owner' => new UserResource($this->whenLoaded('owner')),
             'last_modified_by' => new UserResource($this->whenLoaded('lastModifiedBy')),
             'collaborators' => ProjectCollaboratorResource::collection($this->whenLoaded('collaborators')),

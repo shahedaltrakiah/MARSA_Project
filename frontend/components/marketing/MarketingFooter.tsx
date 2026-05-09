@@ -46,21 +46,23 @@ export default async function MarketingFooter({ className }: { className?: strin
       <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-7">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-start lg:gap-10 xl:gap-14">
           <div className="flex shrink-0 justify-center lg:justify-start">
-            <Link href="/" className="inline-flex shrink-0" aria-label={t("brandAlt")}>
+            <Link href="/" className="inline-flex shrink-0 items-center py-0.5" aria-label={t("brandAlt")}>
               <Image
                 src="/brand/marsa-logo-blue.png"
                 alt=""
-                width={360}
-                height={96}
-                className="h-16 w-auto origin-left scale-[1.06] dark:hidden sm:h-20 lg:h-24"
+                width={720}
+                height={192}
+                sizes="(max-width: 1024px) 260px, 320px"
+                className="h-16 w-auto object-contain object-start dark:hidden sm:h-20 lg:h-24"
                 priority={false}
               />
               <Image
                 src="/brand/marsa-logo-blue-white.png"
                 alt=""
-                width={360}
-                height={96}
-                className="hidden h-16 w-auto origin-left scale-[1.06] dark:block sm:h-20 lg:h-24"
+                width={720}
+                height={192}
+                sizes="(max-width: 1024px) 260px, 320px"
+                className="hidden h-16 w-auto object-contain object-start dark:block sm:h-20 lg:h-24"
                 priority={false}
               />
             </Link>

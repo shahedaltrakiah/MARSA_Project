@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useTranslations } from "next-intl"
 
 import api from "@/lib/api"
 import type { ApiResponse, ProfileFile, StartupProfile, StartupStage } from "@/types/api"
@@ -26,11 +27,11 @@ type ProfileForm = {
 }
 
 const stages: { value: StartupStage; label: string }[] = [
-  { value: "idea", label: "idea" },
-  { value: "validation", label: "validation" },
-  { value: "mvp", label: "mvp" },
-  { value: "early_traction", label: "early_traction" },
-  { value: "scaling", label: "scaling" },
+  { value: "idea", label: "Idea" },
+  { value: "validation", label: "Validation" },
+  { value: "mvp", label: "MVP" },
+  { value: "early_traction", label: "Early Traction" },
+  { value: "scaling", label: "Scaling" },
 ]
 
 function toForm(profile: StartupProfile): ProfileForm {
@@ -48,6 +49,9 @@ function toForm(profile: StartupProfile): ProfileForm {
 }
 
 export default function OnboardingPage() {
+  const t = useTranslations("Workspace.onboarding")
+  const tCommon = useTranslations("Workspace.common")
+
   const [form, setForm] = React.useState<ProfileForm>({
     idea: "",
     problem: "",
@@ -82,7 +86,7 @@ export default function OnboardingPage() {
         setFiles(profile.files ?? [])
       } catch {
         if (!mounted) return
-        setError("Something went wrong.")
+        setError(tCommon("genericError"))
       } finally {
         if (!mounted) return
         setIsLoading(false)
@@ -92,7 +96,7 @@ export default function OnboardingPage() {
     return () => {
       mounted = false
     }
-  }, [])
+  }, [tCommon])
 
   React.useEffect(() => {
     if (!success) return
@@ -120,7 +124,7 @@ export default function OnboardingPage() {
       setFiles(res.data.data.files ?? [])
       setSuccess(true)
     } catch {
-      setError("Something went wrong.")
+      setError(tCommon("genericError"))
     } finally {
       setIsSaving(false)
     }
@@ -132,13 +136,11 @@ export default function OnboardingPage() {
     try {
       const formData = new FormData()
       formData.append("file", file)
-      const res = await api.post<ApiResponse<ProfileFile>>("/profile/files", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
+      const res = await api.post<ApiResponse<ProfileFile>>("/profile/files", formData)
       const created = res.data.data
       setFiles((prev) => [created, ...prev])
     } catch {
-      setUploadError("Upload failed. Please try again.")
+      setUploadError(t("uploadFailed"))
     } finally {
       setIsUploading(false)
     }
@@ -151,7 +153,7 @@ export default function OnboardingPage() {
     try {
       await api.delete(`/profile/files/${file.id}`)
     } catch {
-      setUploadError("Delete failed. Please try again.")
+      setUploadError(t("deleteFailed"))
       setFiles((prev) => [file, ...prev])
     } finally {
       setDeletingIds((prev) => {
@@ -195,15 +197,15 @@ export default function OnboardingPage() {
     <div className="mx-auto max-w-3xl">
       <Card>
         <CardHeader>
-          <CardTitle>Startup profile</CardTitle>
-          <CardDescription>Tell MARSA about your startup. You can change this anytime.</CardDescription>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("subtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
           {/* toast-style success message */}
           {success ? (
             <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4">
               <div className="rounded-full border bg-background/90 px-4 py-2 text-sm shadow-sm backdrop-blur">
-                Profile saved.
+                {t("savedToast")}
               </div>
             </div>
           ) : null}
@@ -211,7 +213,7 @@ export default function OnboardingPage() {
           <form onSubmit={onSave} className="space-y-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="idea">What&apos;s your idea?</Label>
+                <Label htmlFor="idea">{t("idea")}</Label>
                 <textarea
                   id="idea"
                   className={textareaClass}
@@ -221,7 +223,7 @@ export default function OnboardingPage() {
               </div>
 
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="problem">What problem does it solve?</Label>
+                <Label htmlFor="problem">{t("problem")}</Label>
                 <textarea
                   id="problem"
                   className={textareaClass}
@@ -231,7 +233,7 @@ export default function OnboardingPage() {
               </div>
 
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="solution">How do you solve it?</Label>
+                <Label htmlFor="solution">{t("solution")}</Label>
                 <textarea
                   id="solution"
                   className={textareaClass}
@@ -241,7 +243,7 @@ export default function OnboardingPage() {
               </div>
 
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="customer">Who is your target customer?</Label>
+                <Label htmlFor="customer">{t("customer")}</Label>
                 <textarea
                   id="customer"
                   className={textareaClass}
@@ -251,7 +253,7 @@ export default function OnboardingPage() {
               </div>
 
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="traction">Current traction</Label>
+                <Label htmlFor="traction">{t("traction")}</Label>
                 <textarea
                   id="traction"
                   className={textareaClass}
@@ -261,7 +263,7 @@ export default function OnboardingPage() {
               </div>
 
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="challenges">Biggest challenges</Label>
+                <Label htmlFor="challenges">{t("challenges")}</Label>
                 <textarea
                   id="challenges"
                   className={textareaClass}
@@ -271,7 +273,7 @@ export default function OnboardingPage() {
               </div>
 
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="goals">90-day goals</Label>
+                <Label htmlFor="goals">{t("goals")}</Label>
                 <textarea
                   id="goals"
                   className={textareaClass}
@@ -281,24 +283,24 @@ export default function OnboardingPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="team">Team</Label>
+                <Label htmlFor="team">{t("team")}</Label>
                 <Input
                   id="team"
                   value={form.team}
                   onChange={(e) => setForm((p) => ({ ...p, team: e.target.value }))}
-                  placeholder="Co-founder, 2 engineers, etc."
+                  placeholder={t("teamPlaceholder")}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="stage">Stage</Label>
+                <Label htmlFor="stage">{t("stage")}</Label>
                 <select
                   id="stage"
                   value={form.stage}
                   onChange={(e) => setForm((p) => ({ ...p, stage: e.target.value as StartupStage | "" }))}
                   className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
-                  <option value="">Select stage</option>
+                  <option value="">{t("selectStage")}</option>
                   {stages.map((s) => (
                     <option key={s.value} value={s.value}>
                       {s.label}
@@ -315,16 +317,14 @@ export default function OnboardingPage() {
             {/* Documents */}
             <div className="space-y-3">
               <div>
-                <div className="text-sm font-medium">Documents</div>
-                <div className="mt-1 text-sm text-muted-foreground">
-                  Upload files like pitch decks, contracts, or research docs.
-                </div>
+                <div className="text-sm font-medium">{t("documents")}</div>
+                <div className="mt-1 text-sm text-muted-foreground">{t("documentsHint")}</div>
               </div>
 
               <div className="space-y-2">
                 {files.length === 0 ? (
                   <div className="rounded-xl border bg-card/40 p-4 text-sm text-muted-foreground">
-                    No documents uploaded yet.
+                    {t("emptyFiles")}
                   </div>
                 ) : (
                   <div className="rounded-xl border bg-card/40">
@@ -362,21 +362,21 @@ export default function OnboardingPage() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm">Upload</Label>
+                <Label className="text-sm">{t("uploadLabel")}</Label>
                 <label className="group relative flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-dashed bg-card/40 px-4 py-4 transition hover:bg-card/60">
                   <div className="flex items-center gap-3">
                     <div className="inline-flex size-10 items-center justify-center rounded-xl border bg-background/70">
                       <UploadCloud className="size-4 text-muted-foreground" />
                     </div>
                     <div className="text-sm">
-                      <div className="font-medium">Choose a file</div>
+                      <div className="font-medium">{t("chooseFile")}</div>
                       <div className="mt-1 text-xs text-muted-foreground">
-                        {isUploading ? "Uploading…" : "Any file type supported."}
+                        {isUploading ? t("uploading") : t("uploadHint")}
                       </div>
                     </div>
                   </div>
 
-                  <div className="text-xs text-muted-foreground">Browse</div>
+                  <div className="text-xs text-muted-foreground">{t("browse")}</div>
 
                   <input
                     type="file"
@@ -396,7 +396,7 @@ export default function OnboardingPage() {
 
             <div className="flex items-center justify-end">
               <Button type="submit" disabled={isSaving}>
-                {isSaving ? "Saving…" : "Save profile"}
+                {isSaving ? tCommon("saving") : t("saveProfile")}
               </Button>
             </div>
           </form>

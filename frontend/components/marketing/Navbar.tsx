@@ -2,12 +2,16 @@
 
 import * as React from "react"
 import Image from "next/image"
+import NextLink from "next/link"
 import { useTranslations } from "next-intl"
 import { Menu, X } from "lucide-react"
 
+import ThemeToggle from "@/components/layout/ThemeToggle"
+import UserMenu from "@/components/layout/UserMenu"
 import { LocaleSwitcher } from "@/components/marketing/LocaleSwitcher"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/components/utils"
+import { useAuth } from "@/hooks/useAuth"
 import { Link, usePathname } from "@/i18n/navigation"
 
 const NAV_HREFS = [
@@ -18,9 +22,15 @@ const NAV_HREFS = [
   { href: "/contact", labelKey: "contact" as const },
 ]
 
+function isStaffRole(role: string | undefined): boolean {
+  return role === "admin" || role === "super_admin"
+}
+
 export default function Navbar() {
   const t = useTranslations("Nav")
   const pathname = usePathname()
+  const { user, isLoading: authLoading } = useAuth()
+  const staff = Boolean(user && isStaffRole(user.role))
   const [scrolled, setScrolled] = React.useState(false)
   const [mobileOpen, setMobileOpen] = React.useState(false)
 
@@ -60,22 +70,28 @@ export default function Navbar() {
           : "bg-background/0"
       )}
     >
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-4 sm:h-16">
-        <Link href="/" className="inline-flex min-w-0 items-center" aria-label={t("logoHome")}>
+      <div className="mx-auto flex min-h-20 max-w-6xl items-center justify-between gap-2 px-4 py-2 sm:min-h-24 sm:py-2.5">
+        <Link
+          href="/"
+          className="inline-flex shrink-0 items-center px-0.5 py-0.5"
+          aria-label={t("logoHome")}
+        >
           <Image
             src="/brand/marsa-logo-blue.png"
             alt={t("logoAlt")}
-            width={360}
-            height={96}
-            className="h-10 w-auto origin-left scale-[1.12] dark:hidden sm:h-11 sm:scale-[1.14]"
+            width={720}
+            height={192}
+            sizes="(max-width: 640px) 240px, (max-width: 1024px) 300px, 340px"
+            className="h-12 w-auto object-contain object-start dark:hidden sm:h-14 md:h-16 lg:h-[4.5rem]"
             priority
           />
           <Image
             src="/brand/marsa-logo-blue-white.png"
             alt={t("logoAlt")}
-            width={360}
-            height={96}
-            className="hidden h-10 w-auto origin-left scale-[1.12] dark:block sm:h-11 sm:scale-[1.14]"
+            width={720}
+            height={192}
+            sizes="(max-width: 640px) 240px, (max-width: 1024px) 300px, 340px"
+            className="hidden h-12 w-auto object-contain object-start dark:block sm:h-14 md:h-16 lg:h-[4.5rem]"
             priority
           />
         </Link>
@@ -110,28 +126,50 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-2 sm:flex">
           <LocaleSwitcher />
-          <Link
-            href="/login"
-            className={cn(
-              buttonVariants({ size: "default", variant: "outline" }),
-              "marsa-gradient-border transition-transform hover:-translate-y-0.5"
-            )}
-          >
-            {t("login")}
-          </Link>
-          <Link
-            href="/register"
-            className={cn(
-              buttonVariants({ size: "default", variant: "secondary" }),
-              "transition-transform hover:-translate-y-0.5"
-            )}
-          >
-            {t("start")}
-          </Link>
+          <ThemeToggle />
+          {authLoading ? (
+            <div className="h-9 w-28 animate-pulse rounded-md bg-muted/80" aria-hidden />
+          ) : user ? (
+            <>
+              <NextLink
+                href={staff ? "/admin/dashboard" : "/app/projects"}
+                className={cn(
+                  buttonVariants({ size: "default", variant: "secondary" }),
+                  "transition-transform hover:-translate-y-0.5"
+                )}
+              >
+                {staff ? t("adminConsole") : t("workspace")}
+              </NextLink>
+              <UserMenu />
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className={cn(
+                  buttonVariants({ size: "default", variant: "outline" }),
+                  "marsa-gradient-border transition-transform hover:-translate-y-0.5"
+                )}
+              >
+                {t("login")}
+              </Link>
+              <Link
+                href="/register"
+                className={cn(
+                  buttonVariants({ size: "default", variant: "secondary" }),
+                  "transition-transform hover:-translate-y-0.5"
+                )}
+              >
+                {t("start")}
+              </Link>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-2 sm:hidden">
           <LocaleSwitcher />
+          <ThemeToggle />
+          {!authLoading && user ? <UserMenu /> : null}
           <button
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
@@ -170,23 +208,41 @@ export default function Navbar() {
             </div>
             <div className="border-b px-4 py-3">
               <div className="flex flex-col gap-2">
-                <Link
-                  href="/login"
-                  className={cn(
-                    buttonVariants({ size: "lg", variant: "outline" }),
-                    "w-full marsa-gradient-border"
-                  )}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {t("login")}
-                </Link>
-                <Link
-                  href="/register"
-                  className={cn(buttonVariants({ size: "lg", variant: "secondary" }), "w-full")}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {t("signUp")}
-                </Link>
+                {authLoading ? (
+                  <div className="h-11 w-full animate-pulse rounded-lg bg-muted/80" aria-hidden />
+                ) : user ? (
+                  <>
+                    <NextLink
+                      href={staff ? "/admin/dashboard" : "/app/projects"}
+                      className={cn(buttonVariants({ size: "lg", variant: "secondary" }), "w-full")}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {staff ? t("adminConsole") : t("workspace")}
+                    </NextLink>
+                    <p className="truncate px-1 text-sm font-medium text-foreground">{user.name}</p>
+                    <p className="truncate px-1 text-xs text-muted-foreground">{user.email}</p>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      className={cn(
+                        buttonVariants({ size: "lg", variant: "outline" }),
+                        "w-full marsa-gradient-border"
+                      )}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {t("login")}
+                    </Link>
+                    <Link
+                      href="/register"
+                      className={cn(buttonVariants({ size: "lg", variant: "secondary" }), "w-full")}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {t("signUp")}
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
             <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-3" aria-label="Primary">

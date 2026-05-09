@@ -7,6 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.1",
         "laravel/framework": "^11.31",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9"
@@ -19,6 +20,9 @@
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",
         "phpunit/phpunit": "^11.0.1"
+    },
+    "suggest": {
+        "ext-gd": "Required to embed PNG/JPEG logos in PDF exports (DomPDF). Without it, exports omit embedded images but succeed."
     },
     "autoload": {
         "psr-4": {

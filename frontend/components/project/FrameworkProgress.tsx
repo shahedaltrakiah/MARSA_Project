@@ -3,102 +3,129 @@
 import * as React from "react"
 import Link from "next/link"
 import { Check, Circle } from "lucide-react"
+import { useTranslations } from "next-intl"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { frameworkDotClass, frameworkSectionStyle } from "@/lib/frameworkSectionStyle"
 import { cn } from "@/components/utils"
-import api from "@/lib/api"
+import { subsectionHasMeaningfulContent } from "@/lib/workspaceSubsection"
 import type { ProjectSectionContent, ProjectSectionName } from "@/types/api"
 
-const SECTIONS: { slug: ProjectSectionName; label: string }[] = [
-  { slug: "offering", label: "Offering" },
-  { slug: "business-model", label: "Business Model" },
-  { slug: "customer", label: "Customer" },
-  { slug: "money", label: "Money" },
-  { slug: "assets", label: "Assets" },
-  { slug: "action", label: "Action" },
+const SECTION_SLUGS: ProjectSectionName[] = [
+  "offering",
+  "reach",
+  "customer",
+  "money",
+  "assets",
+  "action",
+  "targets",
 ]
 
 function hasNonEmptyField(content: ProjectSectionContent): boolean {
-  return Object.values(content).some((v) => typeof v === "string" && v.trim().length > 0)
+  for (const v of Object.values(content)) {
+    if (typeof v === "string" && v.trim().length > 0) return true
+    if (v && typeof v === "object" && !Array.isArray(v)) {
+      const o = v as Record<string, unknown>
+      if ("points" in o || "notes" in o) {
+        if (subsectionHasMeaningfulContent(v)) return true
+      } else if (Object.values(o).some((s) => typeof s === "string" && String(s).trim().length > 0)) {
+        return true
+      } else {
+        for (const inner of Object.values(o)) {
+          if (inner && typeof inner === "object" && !Array.isArray(inner)) {
+            if (subsectionHasMeaningfulContent(inner)) return true
+          }
+        }
+      }
+    }
+  }
+  return false
 }
 
 export type FrameworkProgressProps = {
-  projectId: number
   projectRouteId: string
+  sections: Partial<Record<ProjectSectionName, ProjectSectionContent>>
+  loading: boolean
 }
 
-export function FrameworkProgress({ projectId, projectRouteId }: FrameworkProgressProps) {
-  const [loading, setLoading] = React.useState(true)
-  const [filled, setFilled] = React.useState<Record<ProjectSectionName, boolean> | null>(null)
+export function FrameworkProgress({ projectRouteId, sections, loading }: FrameworkProgressProps) {
+  const tSections = useTranslations("Workspace.sections")
+  const tFw = useTranslations("Workspace.frameworkProgress")
 
-  React.useEffect(() => {
-    let cancelled = false
-    setLoading(true)
-    setFilled(null)
-
-    const run = async () => {
-      const results = await Promise.all(
-        SECTIONS.map((s) =>
-          api
-            .get<{ data: ProjectSectionContent }>(`/projects/${projectId}/sections/${s.slug}`)
-            .then((res) => hasNonEmptyField(res.data.data ?? {}))
-            .catch(() => false)
-        )
-      )
-      if (cancelled) return
-      const next = {} as Record<ProjectSectionName, boolean>
-      SECTIONS.forEach((s, i) => {
-        next[s.slug] = Boolean(results[i])
-      })
-      setFilled(next)
-      setLoading(false)
+  const filled = React.useMemo(() => {
+    const next = {} as Record<ProjectSectionName, boolean>
+    for (const slug of SECTION_SLUGS) {
+      next[slug] = hasNonEmptyField(sections[slug] ?? {})
     }
+    return next
+  }, [sections])
 
-    void run()
-    return () => {
-      cancelled = true
-    }
-  }, [projectId])
+  const completeCount = SECTION_SLUGS.reduce((n, slug) => n + (filled[slug] ? 1 : 0), 0)
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">Framework progress</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {loading || !filled ? (
-          <ul className="space-y-2" aria-busy="true" aria-label="Loading framework progress">
-            {SECTIONS.map((s) => (
-              <li key={s.slug} className="flex items-center gap-2">
-                <div className="size-4 shrink-0 animate-pulse rounded-full bg-muted" />
-                <div className="h-4 max-w-[220px] flex-1 animate-pulse rounded bg-muted" />
-              </li>
-            ))}
-          </ul>
+    <Card className="overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-b from-card via-card to-muted/15 shadow-sm ring-1 ring-border/30">
+      <CardHeader className="flex flex-row flex-wrap items-center justify-end gap-2 border-b border-border/40 bg-muted/20 px-5 py-3 sm:px-6">
+        {loading ? (
+          <span
+            className="h-7 w-[min(100%,14rem)] max-w-full animate-pulse rounded-full bg-muted/50"
+            aria-hidden
+          />
         ) : (
-          <ul className="space-y-0.5">
-            {SECTIONS.map((s) => {
-              const done = filled[s.slug]
+          <span className="rounded-full border border-border/60 bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground">
+            {tFw("summary", { complete: completeCount, total: SECTION_SLUGS.length })}
+          </span>
+        )}
+      </CardHeader>
+      <CardContent className="p-4 sm:p-5">
+        {loading ? (
+          <div
+            className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4"
+            aria-busy="true"
+            aria-label={tFw("loading")}
+          >
+            {SECTION_SLUGS.map((slug) => (
+              <div
+                key={slug}
+                className="flex animate-pulse items-center gap-2 rounded-xl border border-border/40 bg-muted/40 px-3 py-3"
+              >
+                <div className="size-4 shrink-0 rounded-full bg-muted" />
+                <div className="h-4 flex-1 rounded bg-muted" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            {SECTION_SLUGS.map((slug) => {
+              const done = filled[slug]
+              const accent = frameworkSectionStyle[slug]
               return (
-                <li key={s.slug}>
-                  <Link
-                    href={`/app/projects/${projectRouteId}/${s.slug}`}
+                <Link
+                  key={slug}
+                  href={`/app/projects/${projectRouteId}/${slug}`}
+                  className={cn(
+                    "relative flex items-center gap-2.5 overflow-hidden rounded-xl border border-border/70 px-3 py-3 ps-4 text-sm font-medium transition-colors",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    done ? cn(accent.soft, accent.ring, "ring-1") : "bg-background/60 hover:bg-muted/50"
+                  )}
+                >
+                  <span
                     className={cn(
-                      "flex items-center gap-2 rounded-md px-1 py-1.5 text-sm transition-colors",
-                      "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      "absolute inset-y-0 start-0 w-1.5 rounded-e-sm",
+                      frameworkDotClass(slug),
+                      !done && "opacity-45"
                     )}
-                  >
-                    {done ? (
-                      <Check className="size-4 shrink-0 text-primary" aria-hidden />
-                    ) : (
-                      <Circle className="size-4 shrink-0 text-muted-foreground/45" aria-hidden />
-                    )}
-                    <span>{s.label}</span>
-                  </Link>
-                </li>
+                    aria-hidden
+                  />
+                  {done ? (
+                    <Check className="size-4 shrink-0 text-foreground dark:text-white" aria-hidden />
+                  ) : (
+                    <Circle className="size-4 shrink-0 text-foreground/40 dark:text-white/50" aria-hidden />
+                  )}
+                  <span className="min-w-0 truncate">{tSections(slug)}</span>
+                </Link>
               )
             })}
-          </ul>
+          </div>
         )}
       </CardContent>
     </Card>

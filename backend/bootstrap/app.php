@@ -1,4 +1,7 @@
 <?php
+
+use App\Http\Middleware\CheckRole;
+use App\Http\Middleware\EnsureAdminSiteSection;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -20,7 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'role' => \App\Http\Middleware\CheckRole::class,
+            'role' => CheckRole::class,
+            'admin.site' => EnsureAdminSiteSection::class,
         ]);
     })
     ->booted(function () {

@@ -1,14 +1,14 @@
-'use client'
+"use client"
 
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react"
+import { usePathname } from "next/navigation"
 
-import AdminSidebar from '@/components/admin/AdminSidebar'
+import { AdminShell } from "@/components/admin/AdminShell"
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex min-h-screen">
-      <AdminSidebar />
-      <main className="flex-1 overflow-y-auto p-8">{children}</main>
-    </div>
-  )
+  const pathname = usePathname()
+  if (pathname === "/admin/login") {
+    return <>{children}</>
+  }
+  return <AdminShell>{children}</AdminShell>
 }

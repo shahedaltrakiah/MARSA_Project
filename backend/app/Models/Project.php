@@ -1,14 +1,32 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Project extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['owner_id', 'last_modified_by', 'name', 'logo', 'description'];
+    protected $fillable = [
+        'owner_id',
+        'last_modified_by',
+        'name',
+        'logo',
+        'description',
+        'idea_profile',
+        'idea_profile_completed_at',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'idea_profile' => 'array',
+            'idea_profile_completed_at' => 'datetime',
+        ];
+    }
 
     public function owner()
     {
@@ -40,11 +58,20 @@ class Project extends Model
     public function getCollaboratorRole(User $user): ?string
     {
         $collaborator = $this->collaborators()->where('user_id', $user->id)->first();
+
         return $collaborator?->pivot->role;
     }
 
     public function sections()
     {
         return $this->hasMany(ProjectSection::class);
+    }
+
+    /**
+     * @return HasMany<ProjectInvitation, Project>
+     */
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(ProjectInvitation::class);
     }
 }

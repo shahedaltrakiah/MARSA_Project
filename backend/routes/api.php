@@ -1,20 +1,25 @@
 <?php
-use App\Http\Controllers\AiSuggestController;
+
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\ContentBlockController;
 use App\Http\Controllers\Admin\SiteSettingsAdminController;
+use App\Http\Controllers\AiSuggestController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfileFileController;
 use App\Http\Controllers\ProjectCollaboratorController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectExportController;
 use App\Http\Controllers\ProjectIdeaProfileController;
+use App\Http\Controllers\ProjectInvitationPreviewController;
 use App\Http\Controllers\ProjectSectionController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/site', [SiteController::class, 'index']);
+
+Route::get('/invitations/{token}', [ProjectInvitationPreviewController::class, 'show']);
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -37,6 +42,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/projects', [ProjectController::class, 'store']);
     Route::get('/projects/{project}', [ProjectController::class, 'show']);
     Route::get('/projects/{project}/framework-overview', [ProjectController::class, 'frameworkOverview']);
+    Route::get('/projects/{project}/export/plan', [ProjectExportController::class, 'businessPlan']);
+    Route::get('/projects/{project}/export/canvas', [ProjectExportController::class, 'canvas']);
+    Route::get('/projects/{project}/export/all', [ProjectExportController::class, 'all']);
     // Some clients/environments can’t reliably send multipart files via PUT.
     Route::post('/projects/{project}', [ProjectController::class, 'update']);
     Route::put('/projects/{project}', [ProjectController::class, 'update']);

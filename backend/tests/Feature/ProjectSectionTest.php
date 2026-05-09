@@ -11,10 +11,17 @@ class ProjectSectionTest extends TestCase
 {
     use RefreshDatabase;
 
+    /** @param  array<int, array{id: string, text?: string, starred?: bool, target_date?: string|null}>  $points */
+    private function workspaceTab(string $notes = '', array $points = []): array
+    {
+        return ['notes' => $notes, 'points' => $points];
+    }
+
     private function userWithToken(): array
     {
         $user = User::factory()->create();
         $token = $user->createToken('test')->plainTextToken;
+
         return [$user, $token];
     }
 
@@ -42,14 +49,18 @@ class ProjectSectionTest extends TestCase
         $project = $this->projectOwnedBy($owner);
         $project->sections()->create([
             'section' => 'offering',
-            'content' => ['value_proposition' => 'We save time.'],
+            'content' => [
+                'value_proposition' => $this->workspaceTab('', [
+                    ['id' => 'p1', 'text' => 'We save time.', 'starred' => false],
+                ]),
+            ],
             'updated_by' => $owner->id,
         ]);
 
         $this->withHeader('Authorization', "Bearer {$token}")
             ->getJson("/api/projects/{$project->id}/sections/offering")
             ->assertOk()
-            ->assertJsonPath('data.value_proposition', 'We save time.');
+            ->assertJsonPath('data.value_proposition.points.0.text', 'We save time.');
     }
 
     public function test_collaborator_can_get_section(): void
@@ -94,16 +105,20 @@ class ProjectSectionTest extends TestCase
 
         $this->withHeader('Authorization', "Bearer {$token}")
             ->putJson("/api/projects/{$project->id}/sections/offering", [
-                'value_proposition' => 'We save founders 10 hours a week.',
-                'key_features'      => 'Dashboard, AI hints, collab.',
+                'value_proposition' => $this->workspaceTab('<p>Notes</p>', [
+                    ['id' => 'a1', 'text' => 'We save founders 10 hours a week.', 'starred' => true],
+                ]),
+                'swot' => $this->workspaceTab('', [
+                    ['id' => 'b1', 'text' => 'Strength: team', 'starred' => false],
+                ]),
             ])
             ->assertOk()
-            ->assertJsonPath('data.value_proposition', 'We save founders 10 hours a week.')
-            ->assertJsonPath('data.key_features', 'Dashboard, AI hints, collab.');
+            ->assertJsonPath('data.value_proposition.points.0.text', 'We save founders 10 hours a week.')
+            ->assertJsonPath('data.swot.points.0.text', 'Strength: team');
 
         $this->assertDatabaseHas('project_sections', [
             'project_id' => $project->id,
-            'section'    => 'offering',
+            'section' => 'offering',
         ]);
     }
 
@@ -113,17 +128,20 @@ class ProjectSectionTest extends TestCase
         $project = $this->projectOwnedBy($owner);
         $project->sections()->create([
             'section' => 'offering',
-            'content' => ['value_proposition' => 'Old value', 'key_features' => 'Old features'],
+            'content' => [
+                'value_proposition' => $this->workspaceTab('', [['id' => 'x', 'text' => 'Old value']]),
+                'swot' => $this->workspaceTab('', [['id' => 'y', 'text' => 'Old SWOT']]),
+            ],
             'updated_by' => $owner->id,
         ]);
 
         $this->withHeader('Authorization', "Bearer {$token}")
             ->putJson("/api/projects/{$project->id}/sections/offering", [
-                'value_proposition' => 'New value',
+                'value_proposition' => $this->workspaceTab('', [['id' => 'x', 'text' => 'New value']]),
             ])
             ->assertOk()
-            ->assertJsonPath('data.value_proposition', 'New value')
-            ->assertJsonPath('data.key_features', 'Old features');
+            ->assertJsonPath('data.value_proposition.points.0.text', 'New value')
+            ->assertJsonPath('data.swot.points.0.text', 'Old SWOT');
     }
 
     public function test_editor_collaborator_can_update_section(): void
@@ -135,10 +153,10 @@ class ProjectSectionTest extends TestCase
 
         $this->withHeader('Authorization', "Bearer {$editorToken}")
             ->putJson("/api/projects/{$project->id}/sections/action", [
-                'current_focus' => 'Ship MVP',
+                'tasks' => $this->workspaceTab('', [['id' => 'c1', 'text' => 'Ship MVP']]),
             ])
             ->assertOk()
-            ->assertJsonPath('data.current_focus', 'Ship MVP');
+            ->assertJsonPath('data.tasks.points.0.text', 'Ship MVP');
     }
 
     public function test_viewer_collaborator_cannot_update_section(): void
@@ -150,7 +168,7 @@ class ProjectSectionTest extends TestCase
 
         $this->withHeader('Authorization', "Bearer {$viewerToken}")
             ->putJson("/api/projects/{$project->id}/sections/offering", [
-                'value_proposition' => 'Should not save.',
+                'value_proposition' => $this->workspaceTab('', [['id' => 'z', 'text' => 'Should not save.']]),
             ])
             ->assertForbidden();
     }
@@ -163,7 +181,7 @@ class ProjectSectionTest extends TestCase
 
         $this->withHeader('Authorization', "Bearer {$otherToken}")
             ->putJson("/api/projects/{$project->id}/sections/money", [
-                'monthly_revenue' => '10000',
+                'monthly_revenue' => $this->workspaceTab('', [['id' => 'm1', 'text' => '10000']]),
             ])
             ->assertForbidden();
     }
@@ -175,8 +193,8 @@ class ProjectSectionTest extends TestCase
 
         $response = $this->withHeader('Authorization', "Bearer {$token}")
             ->putJson("/api/projects/{$project->id}/sections/offering", [
-                'value_proposition' => 'Valid field',
-                'hacked_field'      => 'Should be ignored',
+                'value_proposition' => $this->workspaceTab('', [['id' => 'v1', 'text' => 'Valid field']]),
+                'hacked_field' => 'Should be ignored',
             ])
             ->assertOk();
 
@@ -190,6 +208,96 @@ class ProjectSectionTest extends TestCase
 
         $this->withHeader('Authorization', "Bearer {$token}")
             ->putJson("/api/projects/{$project->id}/sections/hacking", ['foo' => 'bar'])
+            ->assertNotFound();
+    }
+
+    // ── Reach (workspace tabs) ───────────────────────────────────────────────
+
+    public function test_owner_can_save_reach_workspace_tabs(): void
+    {
+        [$owner, $token] = $this->userWithToken();
+        $project = $this->projectOwnedBy($owner);
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->putJson("/api/projects/{$project->id}/sections/reach", [
+                'business_model' => $this->workspaceTab('', [
+                    ['id' => 'r1', 'text' => 'SaaS subscriptions'],
+                ]),
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.business_model.points.0.text', 'SaaS subscriptions');
+    }
+
+    public function test_reach_tabs_merge_independently(): void
+    {
+        [$owner, $token] = $this->userWithToken();
+        $project = $this->projectOwnedBy($owner);
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->putJson("/api/projects/{$project->id}/sections/reach", [
+                'branding' => $this->workspaceTab('', [
+                    ['id' => 'b1', 'text' => 'Modern SaaS'],
+                ]),
+            ])
+            ->assertOk();
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->putJson("/api/projects/{$project->id}/sections/reach", [
+                'business_model' => $this->workspaceTab('', [
+                    ['id' => 'm1', 'text' => 'Subscriptions'],
+                ]),
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.branding.points.0.text', 'Modern SaaS')
+            ->assertJsonPath('data.business_model.points.0.text', 'Subscriptions');
+    }
+
+    public function test_owner_can_save_targets_workspace_tabs(): void
+    {
+        [$owner, $token] = $this->userWithToken();
+        $project = $this->projectOwnedBy($owner);
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->putJson("/api/projects/{$project->id}/sections/targets", [
+                'cash' => $this->workspaceTab('', [
+                    ['id' => 't1', 'text' => '$1M ARR goal'],
+                ]),
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.cash.points.0.text', '$1M ARR goal');
+    }
+
+    public function test_targets_tabs_merge_independently(): void
+    {
+        [$owner, $token] = $this->userWithToken();
+        $project = $this->projectOwnedBy($owner);
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->putJson("/api/projects/{$project->id}/sections/targets", [
+                'position' => $this->workspaceTab('', [
+                    ['id' => 'p1', 'text' => 'Market leader'],
+                ]),
+            ])
+            ->assertOk();
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->putJson("/api/projects/{$project->id}/sections/targets", [
+                'cash' => $this->workspaceTab('', [
+                    ['id' => 'c1', 'text' => '$2M ARR'],
+                ]),
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.position.points.0.text', 'Market leader')
+            ->assertJsonPath('data.cash.points.0.text', '$2M ARR');
+    }
+
+    public function test_business_model_section_no_longer_valid(): void
+    {
+        [$owner, $token] = $this->userWithToken();
+        $project = $this->projectOwnedBy($owner);
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->getJson("/api/projects/{$project->id}/sections/business-model")
             ->assertNotFound();
     }
 }
