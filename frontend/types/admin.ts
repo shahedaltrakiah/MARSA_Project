@@ -15,8 +15,37 @@ export interface AdminUserDetail {
   email: string
   role: AdminRole
   created_at: string
+  admin_site_permissions?: string[] | null
   startup_profile: Record<string, string | null> | null
   projects: { id: number; name: string; created_at: string }[]
+}
+
+export interface AdminDashboardStats {
+  workspace_members: number
+  staff: number
+  profiles_with_content: number
+}
+
+export interface AdminEntrepreneurRow {
+  id: number
+  name: string
+  email: string
+  registered_at: string
+  profile_completion_pct: number
+  startup_profile: Record<string, unknown> | null
+}
+
+export interface AdminDashboardPayload {
+  stats: AdminDashboardStats
+  recent_entrepreneurs: AdminEntrepreneurRow[]
+}
+
+export interface CreateUserPayload {
+  name: string
+  email: string
+  password: string
+  role: 'admin' | 'super_admin'
+  admin_site_permissions?: string[]
 }
 
 export interface SiteSettingsData {
