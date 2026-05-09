@@ -66,6 +66,33 @@ class AdminUserController extends Controller
         ]);
     }
 
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name'                     => ['required', 'string', 'max:255'],
+            'email'                    => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password'                 => ['required', 'string', 'min:8'],
+            'role'                     => ['required', 'string', 'in:admin,super_admin'],
+            'admin_site_permissions'   => ['sometimes', 'nullable', 'array'],
+            'admin_site_permissions.*' => ['string', 'in:branding,hero,features,pricing'],
+        ]);
+
+        $perms = null;
+        if ($validated['role'] === 'admin') {
+            $perms = array_values(array_unique($validated['admin_site_permissions'] ?? []));
+        }
+
+        $user = User::create([
+            'name'                   => $validated['name'],
+            'email'                  => $validated['email'],
+            'password'               => $validated['password'],
+            'role'                   => $validated['role'],
+            'admin_site_permissions' => $perms,
+        ]);
+
+        return response()->json(['data' => new UserResource($user)], 201);
+    }
+
     public function updateRole(Request $request, User $user): JsonResponse
     {
         $validated = $request->validate([

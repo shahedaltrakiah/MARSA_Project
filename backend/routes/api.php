@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\AiSuggestController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\ContentBlockController;
 use App\Http\Controllers\Admin\SiteSettingsAdminController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfileFileController;
 use App\Http\Controllers\ProjectCollaboratorController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectIdeaProfileController;
 use App\Http\Controllers\ProjectSectionController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
@@ -34,9 +36,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/projects', [ProjectController::class, 'index']);
     Route::post('/projects', [ProjectController::class, 'store']);
     Route::get('/projects/{project}', [ProjectController::class, 'show']);
+    Route::get('/projects/{project}/framework-overview', [ProjectController::class, 'frameworkOverview']);
+    // Some clients/environments can’t reliably send multipart files via PUT.
+    Route::post('/projects/{project}', [ProjectController::class, 'update']);
     Route::put('/projects/{project}', [ProjectController::class, 'update']);
     Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
     Route::post('/projects/{project}/clone', [ProjectController::class, 'cloneProject']);
+
+    Route::get('/projects/{project}/idea-profile', [ProjectIdeaProfileController::class, 'show']);
+    Route::put('/projects/{project}/idea-profile', [ProjectIdeaProfileController::class, 'update']);
+    Route::post('/projects/{project}/idea-profile/files', [ProjectIdeaProfileController::class, 'uploadFile']);
 
     Route::get('/projects/{project}/collaborators', [ProjectCollaboratorController::class, 'index']);
     Route::post('/projects/{project}/collaborators', [ProjectCollaboratorController::class, 'store']);
@@ -51,15 +60,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('admin')->group(function () {
         // Admin + super_admin
         Route::middleware('role:admin,super_admin')->group(function () {
+            Route::get('/dashboard', [AdminDashboardController::class, 'index']);
+            Route::get('/entrepreneurs', [AdminDashboardController::class, 'entrepreneurs']);
             Route::get('/users', [AdminUserController::class, 'index']);
             Route::get('/users/{user}', [AdminUserController::class, 'show']);
         });
 
-        // Super admin only
         Route::middleware('role:super_admin')->group(function () {
+            Route::post('/users', [AdminUserController::class, 'store']);
             Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole']);
+        });
+
+        Route::middleware(['role:admin,super_admin', 'admin.site:branding'])->group(function () {
             Route::put('/site-settings', [SiteSettingsAdminController::class, 'update']);
             Route::post('/site-settings/logo', [SiteSettingsAdminController::class, 'uploadLogo']);
+        });
+
+        Route::middleware(['role:admin,super_admin', 'admin.site:content'])->group(function () {
             Route::put('/content-blocks/{key}', [ContentBlockController::class, 'update']);
         });
     });
