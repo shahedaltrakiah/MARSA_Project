@@ -21,14 +21,26 @@ export default function middleware(request: NextRequest) {
   const token = request.cookies.get("marsa_token")?.value
 
   if (pathname.startsWith('/admin')) {
+    // Allow the admin login page through unconditionally
+    if (pathname === '/admin/login') {
+      if (token) {
+        const raw = request.cookies.get('marsa_user')?.value
+        const user = raw ? JSON.parse(raw) : null
+        if (['admin', 'super_admin'].includes(user?.role ?? '')) {
+          return NextResponse.redirect(new URL('/admin/users', request.url))
+        }
+      }
+      return NextResponse.next()
+    }
+
     if (!token) {
-      return NextResponse.redirect(new URL('/login', request.url))
+      return NextResponse.redirect(new URL('/admin/login', request.url))
     }
     const raw = request.cookies.get('marsa_user')?.value
     const user = raw ? JSON.parse(raw) : null
     const role = user?.role ?? 'user'
     if (!['admin', 'super_admin'].includes(role)) {
-      return NextResponse.redirect(new URL('/app/projects', request.url))
+      return NextResponse.redirect(new URL('/admin/login', request.url))
     }
     return NextResponse.next()
   }
