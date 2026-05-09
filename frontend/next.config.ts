@@ -4,8 +4,8 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 /** Laravel `storage` URLs for project logos (`NEXT_PUBLIC_API_URL` defaults to localhost:8000 in dev). */
-function logoRemotePatterns(): NonNullable<NextConfig["images"]>["remotePatterns"] {
-  const patterns: NonNullable<NextConfig["images"]>["remotePatterns"] = [
+function logoRemotePatterns(): NonNullable<NonNullable<NextConfig["images"]>["remotePatterns"]> {
+  const patterns: NonNullable<NonNullable<NextConfig["images"]>["remotePatterns"]> = [
     {
       protocol: "http",
       hostname: "localhost",
