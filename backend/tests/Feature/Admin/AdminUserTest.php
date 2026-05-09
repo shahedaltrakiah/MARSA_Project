@@ -99,4 +99,18 @@ class AdminUserTest extends TestCase
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['role']);
     }
+
+    public function test_user_detail_includes_admin_site_permissions(): void
+    {
+        $target = User::factory()->create([
+            'role'                   => 'admin',
+            'admin_site_permissions' => ['branding', 'hero'],
+        ]);
+        [, $token] = $this->userWithToken('super_admin');
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->getJson("/api/admin/users/{$target->id}")
+            ->assertOk()
+            ->assertJsonPath('data.admin_site_permissions', ['branding', 'hero']);
+    }
 }
